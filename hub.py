@@ -8,7 +8,7 @@ from tkinter import filedialog
 appdata_dir = (os.getenv('APPDATA')).replace("\\", "/") + "/Timesplitter/config/"
 
 """
-Use: py -3.9-64 -m PyInstaller -w hub.py
+Use: py -3.9-64 -m PyInstaller --distpath ./pyinstoutput/dist --workpath ./pyinstoutput/build --clean -w hub.py
 """
 
 class Hub_UI: 
