@@ -13,7 +13,6 @@ Use: py -3.9-64 -m PyInstaller -w hub.py
 
 class Hub_UI: 
     def __init__(self):
-
         root = tk.Tk()
         
         mainFrame = tk.Frame(root, padx=30, pady=30)
@@ -87,13 +86,13 @@ class Hub_UI:
         try:
             return f'{self.saveDir}/{self.fileNameEntry.get()}.xlsx'
         except AttributeError: 
-            tkinter.messagebox.showinfo("File error", "Fil og/eller lagrinspunkt er ikke valgt")
+            tkinter.messagebox.showinfo("File error", "Fil er ikke valgt")
 
     def get_file_dir(self):
         try:
             return self.fileDir
         except AttributeError: 
-            tkinter.messagebox.showinfo("File error", "Fil og/eller lagrinspunkt er ikke valgt")
+            tkinter.messagebox.showinfo("File error", "Lagrinspunkt er ikke valgt")
 
 project_types = ['projects.json', 'admin.json', 'ekstern.json', 'intern.json', 'fastpris.json']
 
