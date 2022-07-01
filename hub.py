@@ -2,7 +2,7 @@ import os
 import tkinter as tk
 import tkinter.messagebox
 import configurator
-import timesplitter
+import xlsx_splitter
 from tkinter import filedialog
 
 appdata_dir = (os.getenv('APPDATA')).replace("\\", "/") + "/Timesplitter/config/"
@@ -22,22 +22,28 @@ class Hub_UI:
 
         # Ansatte Btn
         tk.Button(mainFrame,
-            text="Lag timer for ansatte",
-            command= lambda: timesplitter.reformat_into_employees(self.get_file_save_dir(), self.get_file_dir())
+            text=".xlsx -> Ansatte timer (.xlsx)",
+            command= lambda: xlsx_splitter.reformat_into_employees(self.get_file_save_dir(), self.get_file_dir())
         ).grid(row=0, column= curCol)
 
-        # Prosjekter Btn
+        # Prosjekter til timer Btn
         tk.Button(mainFrame,
-            text="Lag timer for prosjekter",
-            command= lambda: timesplitter.reformat_into_projects(self.get_file_save_dir(), self.get_file_dir())
+            text=".xlsx -> Prosjekt timer (.xlsx)",
+            command= lambda: xlsx_splitter.reformat_into_projects(self.get_file_save_dir(), self.get_file_dir())
         ).grid(row=1, column= curCol)
+
+        # Prosjekter til fakturert
+        tk.Button(mainFrame,
+            text=".csv -> Prosjekt fakturert (.xlsx)",
+            command= lambda: xlsx_splitter.reformat_into_billed(self.get_file_save_dir(), self.get_file_dir())
+        ).grid(row=2, column= curCol)
 
         # Config Btn
         tk.Button(mainFrame,
             text="Config",
             command=configurator.main,
             bg="#4287f5"
-        ).grid(row=2, column=curCol)
+        ).grid(row=3, column=curCol)
 
         curCol += 1
 
