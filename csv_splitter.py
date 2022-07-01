@@ -1,6 +1,7 @@
 import json
 import pandas
 import os
+import csv
 import tkinter.messagebox
 
 appdata_dir = (os.getenv('APPDATA')).replace("\\", "/") + "/Timesplitter/config/"
@@ -77,11 +78,12 @@ def get_companies(csvFile):
             # print(f'RowNr: {rowIndex}, timer: {float(row[16].replace(",", "."))} ')
             companies[companyIndex]['timer'] += float(row[16].replace(",", ".")) 
             companies[companyIndex]['fakt. timer'] += float(row[19].replace(",", ".")) 
+        
 
     return companies
 
 def save_as(filename, data):
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    # os.makedirs(os.path.dirname(filename), exist_ok=True)
     f = open(filename, "w+")
     f.write(json.dumps(data, indent=2))
     f.close()
@@ -133,7 +135,7 @@ def get_project_index_by_name(projectName, projects):
 
     return None
 
-def get_projects(csvFile, includeType = False):
+def get_projects(csvFile):
     """
     Returnerer en liste med prosjekter som dicts
     """
@@ -148,6 +150,7 @@ def get_projects(csvFile, includeType = False):
             if row[6] in projectNames:
                 projectIndex = get_project_index_by_name(row[6], projects)
                 projectType = get_project_type(row[6], projectTypes)
+                if len(row) > 25: print(row)
 
                 projects[projectIndex][projectType] += float(row[16].replace(",", '.'))
 
@@ -183,23 +186,20 @@ def read_csv_file(fileName):
     """
     Leser csv fil og reurnerer som 2 dimensional liste
     """
-    values = []
+    with open(fileName, newline='') as f:
+        reader = csv.reader(f, delimiter=";")
+        data = [tuple(row) for row in reader]
 
-    with open(fileName, "r") as f:
-        for line in f.readlines():
-            values.append([str(i).replace('"', '') for i in line.split(";")])
-    
-    for row in values:
-        row.pop()
+    # save_as("test.json", data)
 
-    return values
+    return data
 
 def reformat_into_company_billed(saveDir, fileName):
     if user_cancel_overwrite(saveDir): return
     
     csvFile = read_csv_file(fileName)
-    companies = get_companies(csvFile)
 
+    companies = get_companies(csvFile)
     df = pandas.DataFrame(companies)
 
     if not save_dataframe_as_excel(df, saveDir): return
@@ -210,8 +210,6 @@ def reformat_into_projects(saveDir, fileName):
     if user_cancel_overwrite(saveDir): return
 
     csvFile = read_csv_file(fileName)
-
-    # if check_document_invalid(excelFile): return
 
     projects = get_projects(csvFile)
     df = pandas.DataFrame(projects)
