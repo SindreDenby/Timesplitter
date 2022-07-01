@@ -1,7 +1,9 @@
-from unicodedata import name
+import json
 import pandas
 import os
 import tkinter.messagebox
+
+appdata_dir = (os.getenv('APPDATA')).replace("\\", "/") + "/Timesplitter/config/"
 
 def user_cancel_overwrite(filePath):
     """
@@ -78,6 +80,105 @@ def get_companies(csvFile):
 
     return companies
 
+def save_as(filename, data):
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    f = open(filename, "w+")
+    f.write(json.dumps(data, indent=2))
+    f.close()
+
+def create_projects_shell(projectNames):
+    projects = []
+
+    for name in projectNames:
+        projects.append({
+            'name': name,
+            'admin': 0,
+            'ekstern': 0,
+            'intern': 0,
+            'fastpris': 0,
+            'ikke valgt': 0
+        })
+    
+    return projects
+
+def get_available_projects(csvFile):
+    projects = []
+
+    for row in csvFile:
+        projects.append(row[6])
+
+    projects = list(dict.fromkeys(projects))
+    projects.remove('Prosjektnavn')
+
+    return projects
+
+def get_project_type(projectName, types):
+    """
+    Tar inn prosjekt navnet og prosjekt type listen ( get_project_types() )
+
+    Returnerer prosjekt typen
+    """
+    for type in types:
+        if projectName in type['projects']:
+            return type['projectType']
+    return "ikke valgt"    
+
+def get_project_index_by_name(projectName, projects):
+    """
+    Return index of the given project name
+    """
+    for projectIndex, project in enumerate(projects) :
+        if project['name'] == projectName:
+            return projectIndex
+
+    return None
+
+def get_projects(csvFile, includeType = False):
+    """
+    Returnerer en liste med prosjekter som dicts
+    """
+    projectNames = get_available_projects(csvFile)
+    save_as(appdata_dir + "projects.json", projectNames)
+    projects = create_projects_shell(projectNames)
+    projectTypes = get_project_types()
+
+    run = False
+    for row in csvFile:
+        if run:
+            if row[6] in projectNames:
+                projectIndex = get_project_index_by_name(row[6], projects)
+                projectType = get_project_type(row[6], projectTypes)
+
+                projects[projectIndex][projectType] += float(row[16].replace(",", '.'))
+
+        run = True
+
+    return (projects)
+
+project_types = ['admin.json', 'ekstern.json', 'intern.json', 'fastpris.json']
+def get_project_types():
+    """
+    Returnerer: 
+    [
+        {
+            'projectType': "admin",
+            'projects': ["økonomi", "Ledelse", ...]
+        },
+        ...
+    ]
+    """
+    types = []
+
+    for projectType in project_types:
+        
+        f = open(appdata_dir + projectType, "r")
+        types.append ( {
+            'projectType': projectType.split('.')[0],
+            'projects': json.loads(f.read())
+        })
+        f.close
+    return types
+
 def read_csv_file(fileName):
     """
     Leser csv fil og reurnerer som 2 dimensional liste
@@ -104,3 +205,18 @@ def reformat_into_company_billed(saveDir, fileName):
     if not save_dataframe_as_excel(df, saveDir): return
 
     tkinter.messagebox.showinfo("Konvertert", "Filen er lagret i " + saveDir)
+
+def reformat_into_projects(saveDir, fileName):
+    if user_cancel_overwrite(saveDir): return
+
+    csvFile = read_csv_file(fileName)
+
+    # if check_document_invalid(excelFile): return
+
+    projects = get_projects(csvFile)
+    df = pandas.DataFrame(projects)
+
+    if not save_dataframe_as_excel(df, saveDir): return
+
+    tkinter.messagebox.showinfo("Konvertert", "Filen er lagret i " + saveDir)
+

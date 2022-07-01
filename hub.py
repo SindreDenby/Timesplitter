@@ -29,8 +29,8 @@ class Hub_UI:
 
         # Prosjekter til timer Btn
         tk.Button(mainFrame,
-            text=".xlsx -> Prosjekt timer.xlsx",
-            command= lambda: xlsx_splitter.reformat_into_projects(self.get_file_save_dir(), self.get_file_dir())
+            text=".csv -> Prosjekt timer.xlsx",
+            command= lambda: csv_splitter.reformat_into_projects(self.get_file_save_dir(), self.get_file_dir())
         ).grid(row=1, column= curCol)
 
         # Prosjekter til fakturert

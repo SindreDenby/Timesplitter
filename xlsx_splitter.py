@@ -41,7 +41,6 @@ def get_projects(excelFile, includeType = False):
 
     return (projects)
 
-
 project_types = ['admin.json', 'ekstern.json', 'intern.json', 'fastpris.json']
 def get_project_types():
     """
