@@ -86,15 +86,15 @@ def find_project(list, project):
             return i
     print("Not found:", project)
 
-def get_available_projects(list):
+def get_available_projects(excelFile):
     """
     Henter ut alle prosjektnavnene i filen
     """
     availableProjects = []
 
-    for i, row in enumerate(list):
+    for i, row in enumerate(excelFile):
         if row[1] == "Aktivitetssammendrag":
-            availableProjects.append(list[i - 2][1])
+            availableProjects.append(excelFile[i - 2][1])
 
     return availableProjects
 
@@ -179,7 +179,9 @@ def get_employees_data(names, excelFile, projects):
     return employees_data
 
 def get_employee_instance_sum(instanceRowNr, excelFile):
-
+    """
+    Finds the sum of the given employee instance
+    """
     i = instanceRowNr + 1
 
     while (not is_sum(excelFile[i][1])):
@@ -215,7 +217,9 @@ def user_cancel_overwrite(filePath):
     Returns true if the user does not want to overwrite
     """
     if os.path.exists(filePath): 
-        return not tkinter.messagebox.askyesno("Overwrite File", f"{filePath} eksisterer allerede, vil du overskrive?")
+        return not tkinter.messagebox.askyesno("Overwrite File",
+            f"{filePath} eksisterer allerede, vil du overskrive?"
+        )
 
     return False
 
@@ -223,7 +227,6 @@ def save_dataframe_as_excel(dataframe, saveDir):
     """
     Returns True if completes without error
     """
-
     try: 
         dataframe.to_excel(saveDir, index=False)
         return True
@@ -234,16 +237,25 @@ def save_dataframe_as_excel(dataframe, saveDir):
         tkinter.messagebox.showerror("File error", "Filnavn er ikke valgt")
         return False
 
+def check_document_invalid(excelFile):
+    """
+    Returns true if document is invalid
+    """
+    if excelFile[0][0] == "Timeoversikt": 
+        
+        return False
+
+    tkinter.messagebox.showerror("Invalid", "Filen som leses av er feil eller korrupt")
+    return True
+
 def reformat_into_projects(saveDir, fileName):
     if user_cancel_overwrite(saveDir): return
 
     excelFile = read_excel_file(fileName)
-    
-    # with open('out.json', 'w') as f:
-    #     f.write(json.dumps(excelFile, indent=4))
+
+    if check_document_invalid(excelFile): return
 
     projects = get_projects(excelFile)
-
     df = pandas.DataFrame(projects)
 
     if not save_dataframe_as_excel(df, saveDir): return
@@ -255,12 +267,11 @@ def reformat_into_employees(saveDir, fileName):
 
     excelFile = read_excel_file(fileName)
 
+    if check_document_invalid(excelFile): return
+
     projects = get_projects(excelFile, includeType=True)
-
     employee_names = get_employee_names(excelFile)
-
     employees = get_employees_data(employee_names, excelFile, projects)
-
     df = pandas.DataFrame(employees)
 
     if not save_dataframe_as_excel(df, saveDir): return

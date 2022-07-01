@@ -84,7 +84,7 @@ class Hub_UI:
 
     def get_file_save_dir(self):
         try:
-            return f'{self.saveDir}/{self.fileNameEntry.get()}.xlsx'
+            return f'{self.saveDir}{self.fileNameEntry.get()}.xlsx'
         except AttributeError: 
             tkinter.messagebox.showinfo("File error", "Fil er ikke valgt")
 
@@ -97,7 +97,7 @@ class Hub_UI:
 project_types = ['projects.json', 'admin.json', 'ekstern.json', 'intern.json', 'fastpris.json']
 
 def first_time_setup():
-    print("First time setup")
+    # print("First time setup")
     os.makedirs(appdata_dir, exist_ok=True)
 
     for type in project_types:
