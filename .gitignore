@@ -1846,3 +1846,5 @@ pyinstoutput/dist/hub/tk/ttk/vistaTheme.tcl
 pyinstoutput/dist/hub/tk/ttk/winTheme.tcl
 pyinstoutput/dist/hub/tk/ttk/xpTheme.tcl
 Output/timesplitter installer 1.0.exe
+__pycache__/configurator.cpython-39.pyc
+__pycache__/timesplitter.cpython-39.pyc

@@ -219,6 +219,21 @@ def user_cancel_overwrite(filePath):
 
     return False
 
+def save_dataframe_as_excel(dataframe, saveDir):
+    """
+    Returns True if completes without error
+    """
+
+    try: 
+        dataframe.to_excel(saveDir, index=False)
+        return True
+    except PermissionError: 
+        tkinter.messagebox.showerror("Error", "Permission Error: Filen er åpen i et annet program eller er utiljengelig.")
+        return False
+    except ValueError: 
+        tkinter.messagebox.showerror("File error", "Filnavn er ikke valgt")
+        return False
+
 def reformat_into_projects(saveDir, fileName):
     if user_cancel_overwrite(saveDir): return
 
@@ -231,15 +246,7 @@ def reformat_into_projects(saveDir, fileName):
 
     df = pandas.DataFrame(projects)
 
-
-    try: df.to_excel(saveDir, index=False)
-    except PermissionError: 
-        tkinter.messagebox.showerror("Error", "Permission Error: Filen er åpen i et annet program eller er utiljengelig.")
-        return
-    except ValueError: 
-        tkinter.messagebox.showinfo("File error", "Filnavn er ikke valgt")
-        return
-
+    if not save_dataframe_as_excel(df, saveDir): return
 
     tkinter.messagebox.showinfo("Konvertert", "Filen er lagret i " + saveDir)
 
@@ -256,13 +263,7 @@ def reformat_into_employees(saveDir, fileName):
 
     df = pandas.DataFrame(employees)
 
-    try: df.to_excel(saveDir, index=False)
-    except PermissionError: 
-        tkinter.messagebox.showerror("Error", "Permission Error: Filen er åpen i et annet program eller er utiljengelig.")
-        return
-    except ValueError: 
-        tkinter.messagebox.showinfo("File error", "Filnavn er ikke valgt")
-        return
+    if not save_dataframe_as_excel(df, saveDir): return
 
     tkinter.messagebox.showinfo("Konvertert", "Filen er lagret i " + saveDir)
 
