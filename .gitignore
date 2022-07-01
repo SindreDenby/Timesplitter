@@ -1848,3 +1848,5 @@ pyinstoutput/dist/hub/tk/ttk/xpTheme.tcl
 Output/timesplitter installer 1.0.exe
 __pycache__/configurator.cpython-39.pyc
 __pycache__/timesplitter.cpython-39.pyc
+__pycache__/csv_splitter.cpython-39.pyc
+__pycache__/xlsx_splitter.cpython-39.pyc

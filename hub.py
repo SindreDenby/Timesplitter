@@ -3,6 +3,7 @@ import tkinter as tk
 import tkinter.messagebox
 import configurator
 import xlsx_splitter
+import csv_splitter
 from tkinter import filedialog
 
 appdata_dir = (os.getenv('APPDATA')).replace("\\", "/") + "/Timesplitter/config/"
@@ -22,20 +23,20 @@ class Hub_UI:
 
         # Ansatte Btn
         tk.Button(mainFrame,
-            text=".xlsx -> Ansatte timer (.xlsx)",
+            text=".xlsx -> Ansatte timer.xlsx",
             command= lambda: xlsx_splitter.reformat_into_employees(self.get_file_save_dir(), self.get_file_dir())
         ).grid(row=0, column= curCol)
 
         # Prosjekter til timer Btn
         tk.Button(mainFrame,
-            text=".xlsx -> Prosjekt timer (.xlsx)",
+            text=".xlsx -> Prosjekt timer.xlsx",
             command= lambda: xlsx_splitter.reformat_into_projects(self.get_file_save_dir(), self.get_file_dir())
         ).grid(row=1, column= curCol)
 
         # Prosjekter til fakturert
         tk.Button(mainFrame,
-            text=".csv -> Prosjekt fakturert (.xlsx)",
-            command= lambda: xlsx_splitter.reformat_into_billed(self.get_file_save_dir(), self.get_file_dir())
+            text=".csv -> Kunder fakturert.xlsx",
+            command= lambda: csv_splitter.reformat_into_company_billed(self.get_file_save_dir(), self.get_file_dir())
         ).grid(row=2, column= curCol)
 
         # Config Btn
@@ -61,11 +62,11 @@ class Hub_UI:
         )
         self.setDirBtn.grid(row=1, column= curCol)
 
+        # Filename frame
         fileNameFrame = tk.Frame(mainFrame)
         fileNameFrame.grid(row=2, column=curCol)
         fileNameFrame.grid()
 
-        # File name label
         tk.Label(fileNameFrame, text="Filnavn:").grid(row=0, column=0)
 
         self.fileNameEntry = tk.Entry(fileNameFrame, justify=tk.RIGHT)
@@ -90,7 +91,7 @@ class Hub_UI:
 
     def get_file_save_dir(self):
         try:
-            return f'{self.saveDir}{self.fileNameEntry.get()}.xlsx'
+            return f'{self.saveDir}/{self.fileNameEntry.get()}.xlsx'
         except AttributeError: 
             tkinter.messagebox.showinfo("File error", "Fil er ikke valgt")
 

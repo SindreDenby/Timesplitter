@@ -255,7 +255,7 @@ def reformat_into_projects(saveDir, fileName):
 
     excelFile = read_excel_file(fileName)
 
-    if check_document_invalid(excelFile): return
+    # if check_document_invalid(excelFile): return
 
     projects = get_projects(excelFile)
     df = pandas.DataFrame(projects)
@@ -269,7 +269,7 @@ def reformat_into_employees(saveDir, fileName):
 
     excelFile = read_excel_file(fileName)
 
-    if check_document_invalid(excelFile): return
+    # if check_document_invalid(excelFile): return
 
     projects = get_projects(excelFile, includeType=True)
     employee_names = get_employee_names(excelFile)
