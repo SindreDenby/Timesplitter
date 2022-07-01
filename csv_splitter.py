@@ -75,7 +75,6 @@ def get_companies(csvFile):
             companyName = row[1]
             companyIndex = get_company_index_by_name(companyName, companies)
 
-            # print(f'RowNr: {rowIndex}, timer: {float(row[16].replace(",", "."))} ')
             companies[companyIndex]['timer'] += float(row[16].replace(",", ".")) 
             companies[companyIndex]['fakt. timer'] += float(row[19].replace(",", ".")) 
         
@@ -150,7 +149,6 @@ def get_projects(csvFile):
             if row[6] in projectNames:
                 projectIndex = get_project_index_by_name(row[6], projects)
                 projectType = get_project_type(row[6], projectTypes)
-                if len(row) > 25: print(row)
 
                 projects[projectIndex][projectType] += float(row[16].replace(",", '.'))
 
