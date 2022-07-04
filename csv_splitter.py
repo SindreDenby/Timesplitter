@@ -124,17 +124,17 @@ def get_project_type(projectName, types):
             return type['projectType']
     return "ikke valgt"    
 
-def get_project_index_by_name(projectName, projects):
+def get_object_index_by_name(projectName, projects):
     """
     Return index of the given project name
     """
-    for projectIndex, project in enumerate(projects) :
+    for objectIndex, project in enumerate(projects) :
         if project['name'] == projectName:
-            return projectIndex
+            return objectIndex
 
     return None
 
-def get_projects(csvFile):
+def get_projects(csvFile, includeType = False):
     """
     Returnerer en liste med prosjekter som dicts
     """
@@ -147,10 +147,13 @@ def get_projects(csvFile):
     for row in csvFile:
         if run:
             if row[6] in projectNames:
-                projectIndex = get_project_index_by_name(row[6], projects)
+                projectIndex = get_object_index_by_name(row[6], projects)
                 projectType = get_project_type(row[6], projectTypes)
 
                 projects[projectIndex][projectType] += float(row[16].replace(",", '.'))
+
+                if includeType:
+                    projects[projectIndex]['projectType'] = projectType
 
         run = True
 
@@ -180,6 +183,40 @@ def get_project_types():
         f.close
     return types
 
+def get_employee_names(csvFile):
+    return list(dict.fromkeys([i[13] for i in csvFile[1:]]))
+
+def create_employees_shell(employeNames):
+    """
+    Returnerer en liste med ansatte uten sumerte timer
+    """
+    employees = []
+
+    for name in employeNames:
+        employees.append({
+            'name': name,
+            'admin': 0,
+            'ekstern': 0,
+            'fastpris': 0,
+            'intern': 0,
+            'ikke valgt': 0
+        })
+
+    return employees
+
+def get_employees_data(names, projects, csvFile):
+    employees = create_employees_shell(names)
+    projectTypes = get_project_types()
+
+    for row in csvFile[1:]:
+        curNameIndex = get_object_index_by_name(row[13], employees)
+        projectType = get_project_type(row[6], projectTypes)
+
+        employees[curNameIndex][projectType] += float(row[16].replace(",", "."))
+
+    return employees    
+
+
 def read_csv_file(fileName):
     """
     Leser csv fil og reurnerer som 2 dimensional liste
@@ -203,6 +240,24 @@ def reformat_into_company_billed(saveDir, fileName):
     if not save_dataframe_as_excel(df, saveDir): return
 
     tkinter.messagebox.showinfo("Konvertert", "Filen er lagret i " + saveDir)
+
+def reformat_into_employees(saveDir, fileName):
+    if user_cancel_overwrite(saveDir): return
+
+    csvFile = read_csv_file(fileName)
+
+    # if check_document_invalid(excelFile): return
+
+    projects = get_projects(csvFile)
+    employee_names = get_employee_names(csvFile)
+
+    employees = get_employees_data(employee_names, projects, csvFile)
+    df = pandas.DataFrame(employees)
+
+    if not save_dataframe_as_excel(df, saveDir): return
+
+    tkinter.messagebox.showinfo("Konvertert", "Filen er lagret i " + saveDir)
+
 
 def reformat_into_projects(saveDir, fileName):
     if user_cancel_overwrite(saveDir): return

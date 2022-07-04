@@ -2,7 +2,6 @@ import os
 import tkinter as tk
 import tkinter.messagebox
 import configurator
-import xlsx_splitter
 import csv_splitter
 from tkinter import filedialog
 
@@ -23,8 +22,8 @@ class Hub_UI:
 
         # Ansatte Btn
         tk.Button(mainFrame,
-            text=".xlsx -> Ansatte timer.xlsx",
-            command= lambda: xlsx_splitter.reformat_into_employees(self.get_file_save_dir(), self.get_file_dir())
+            text=".csv -> Ansatte timer.xlsx",
+            command= lambda: csv_splitter.reformat_into_employees(self.get_file_save_dir(), self.get_file_dir())
         ).grid(row=0, column= curCol)
 
         # Prosjekter til timer Btn
