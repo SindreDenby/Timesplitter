@@ -199,15 +199,29 @@ def get_employees_data(names, csvFile):
 
     return employees    
 
+def check_document_invalid(excelFile):
+    """
+    Returns true if document is invalid
+    """
+    if excelFile[0][0] == "Kundenummer": 
+        return False
+
+    tkinter.messagebox.showerror("Invalid", "Filen som leses av er feil eller korrupt")
+    return True
+
 
 def read_csv_file(fileName):
     """
     Leser csv fil og reurnerer som 2 dimensional liste
     """
-    with open(fileName, newline='') as f:
+    try:
+
+     with open(fileName, newline='') as f:
         reader = csv.reader(f, delimiter=";")
         data = [tuple(row) for row in reader]
 
+    except UnicodeDecodeError:
+        tkinter.messagebox.showerror("Invalid", "Filen som leses av er feil eller korrupt")
     # save_as("test.json", data)
 
     return data
@@ -216,6 +230,8 @@ def reformat_into_company_billed(saveDir, fileName):
     if user_cancel_overwrite(saveDir): return
     
     csvFile = read_csv_file(fileName)
+
+    if check_document_invalid(csvFile): return
 
     companies = get_companies(csvFile)
     df = pandas.DataFrame(companies)
@@ -229,7 +245,7 @@ def reformat_into_employees(saveDir, fileName):
 
     csvFile = read_csv_file(fileName)
 
-    # if check_document_invalid(excelFile): return
+    if check_document_invalid(csvFile): return
 
     projects = get_projects(csvFile)
     employee_names = get_employee_names(csvFile)
@@ -246,6 +262,8 @@ def reformat_into_projects(saveDir, fileName):
     if user_cancel_overwrite(saveDir): return
 
     csvFile = read_csv_file(fileName)
+
+    if check_document_invalid(csvFile): return
 
     projects = get_projects(csvFile)
     df = pandas.DataFrame(projects)

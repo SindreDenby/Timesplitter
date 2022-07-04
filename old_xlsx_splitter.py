@@ -279,8 +279,6 @@ def reformat_into_employees(saveDir, fileName):
 
     tkinter.messagebox.showinfo("Konvertert", "Filen er lagret i " + saveDir)
 
-
-
 def main():
     pass
 
