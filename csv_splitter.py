@@ -252,6 +252,10 @@ def read_csv_file(fileName):
 
     except UnicodeDecodeError:
         tkinter.messagebox.showerror("Invalid", "Filen som leses av er feil eller korrupt")
+
+    except PermissionError:
+        tkinter.messagebox.showerror("Permission Error", "Fil er ikke tiljengelig/åpen i et annet program")
+
     # save_as("test.json", data)
 
     return data
@@ -309,7 +313,6 @@ def reformat_into_average_hourly(saveDir, fileName):
     if check_document_invalid(csvFile): return
 
     get_projects(csvFile)
-
     hourlyAverage = get_monthly_hour_average(csvFile)
     df = pandas.DataFrame(hourlyAverage)
 
