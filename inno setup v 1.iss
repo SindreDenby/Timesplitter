@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "timesplitter"
-#define MyAppVersion "1.1.1"
+#define MyAppVersion "1.2.0"
 #define MyAppPublisher "Sindre Denby"
 #define MyAppURL "https://github.com/SindreDenby/Timesplitter"
 #define MyAppExeName "hub.exe"
