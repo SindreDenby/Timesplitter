@@ -1,3 +1,4 @@
 pyinstoutput/
 Output/
 hub.spec
+__pycache__/
