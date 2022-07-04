@@ -210,9 +210,9 @@ def format_month_year(date):
     """
     Reformats date to month and year
 
-    Ex: "22.04.2022" returns "04.2022"
+    Ex: "2022-04-22" returns "2022-04"
     """
-    return ".".join(date.split("-")[:2]) 
+    return "-".join(date.split("-")[:2]) 
 
 def get_monthly_hour_average(csvFile):
     months = []
@@ -221,7 +221,6 @@ def get_monthly_hour_average(csvFile):
     for row in csvFile[1:]:
         if get_project_type(row[6], projectTypes) == 'ekstern':
             date = format_month_year(row[15])
-            # print(date)
 
             if date not in [i['name'] for i in months]:
                 months.append({

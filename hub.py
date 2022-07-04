@@ -15,6 +15,8 @@ class Hub_UI:
     def __init__(self):
         root = tk.Tk()
         
+        root.title("Timesplitter")
+
         mainFrame = tk.Frame(root, padx=30, pady=30)
         mainFrame.grid()
 
