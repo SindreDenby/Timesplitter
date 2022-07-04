@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "timesplitter"
-#define MyAppVersion "1.0"
+#define MyAppVersion "1.1"
 #define MyAppPublisher "Sindre Denby"
 #define MyAppURL "https://github.com/SindreDenby/Timesplitter"
 #define MyAppExeName "hub.exe"
@@ -22,7 +22,7 @@ DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
 ; Remove the following line to run in administrative install mode (install for all users.)
 PrivilegesRequired=lowest
-OutputBaseFilename=timesplitter installer 1.0
+OutputBaseFilename=timesplitter installer 1.1
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
