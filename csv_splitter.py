@@ -186,26 +186,9 @@ def get_project_types():
 def get_employee_names(csvFile):
     return list(dict.fromkeys([i[13] for i in csvFile[1:]]))
 
-def create_employees_shell(employeNames):
-    """
-    Returnerer en liste med ansatte uten sumerte timer
-    """
-    employees = []
 
-    for name in employeNames:
-        employees.append({
-            'name': name,
-            'admin': 0,
-            'ekstern': 0,
-            'fastpris': 0,
-            'intern': 0,
-            'ikke valgt': 0
-        })
-
-    return employees
-
-def get_employees_data(names, projects, csvFile):
-    employees = create_employees_shell(names)
+def get_employees_data(names, csvFile):
+    employees = create_projects_shell(names)
     projectTypes = get_project_types()
 
     for row in csvFile[1:]:
@@ -251,7 +234,7 @@ def reformat_into_employees(saveDir, fileName):
     projects = get_projects(csvFile)
     employee_names = get_employee_names(csvFile)
 
-    employees = get_employees_data(employee_names, projects, csvFile)
+    employees = get_employees_data(employee_names, csvFile)
     df = pandas.DataFrame(employees)
 
     if not save_dataframe_as_excel(df, saveDir): return
