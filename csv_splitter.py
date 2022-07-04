@@ -134,7 +134,7 @@ def get_object_index_by_name(projectName, projects):
 
     return None
 
-def get_projects(csvFile, includeType = False):
+def get_projects(csvFile):
     """
     Returnerer en liste med prosjekter som dicts
     """
@@ -151,9 +151,6 @@ def get_projects(csvFile, includeType = False):
                 projectType = get_project_type(row[6], projectTypes)
 
                 projects[projectIndex][projectType] += float(row[16].replace(",", '.'))
-
-                if includeType:
-                    projects[projectIndex]['projectType'] = projectType
 
         run = True
 
@@ -209,6 +206,40 @@ def check_document_invalid(excelFile):
     tkinter.messagebox.showerror("Invalid", "Filen som leses av er feil eller korrupt")
     return True
 
+def format_month_year(date):
+    """
+    Reformats date to month and year
+
+    Ex: "22.04.2022" returns "04.2022"
+    """
+    return ".".join(date.split("-")[:2]) 
+
+def get_monthly_hour_average(csvFile):
+    months = []
+    projectTypes = get_project_types()
+
+    for row in csvFile[1:]:
+        if get_project_type(row[6], projectTypes) == 'ekstern':
+            date = format_month_year(row[15])
+            # print(date)
+
+            if date not in [i['name'] for i in months]:
+                months.append({
+                    'name': date,
+                    'timer': 0,
+                    'snitt': 0,
+                    'timeprisSum': 0
+                }) 
+            
+            dateIndex = get_object_index_by_name(date, months)
+            months[dateIndex]['timer'] += float(row[16].replace(",", "."))
+            months[dateIndex]['timeprisSum'] += float(row[20].replace(",", ".")) * float(row[16].replace(",", "."))
+
+    for i, month in enumerate(months):
+        months[i]['snitt'] = month['timeprisSum'] / month['timer']
+        months[i].pop('timeprisSum')
+
+    return months
 
 def read_csv_file(fileName):
     """
@@ -267,6 +298,22 @@ def reformat_into_projects(saveDir, fileName):
 
     projects = get_projects(csvFile)
     df = pandas.DataFrame(projects)
+
+    if not save_dataframe_as_excel(df, saveDir): return
+
+    tkinter.messagebox.showinfo("Konvertert", "Filen er lagret i " + saveDir)
+
+def reformat_into_average_hourly(saveDir, fileName):
+    if user_cancel_overwrite(saveDir): return
+
+    csvFile = read_csv_file(fileName)
+
+    if check_document_invalid(csvFile): return
+
+    get_projects(csvFile)
+
+    hourlyAverage = get_monthly_hour_average(csvFile)
+    df = pandas.DataFrame(hourlyAverage)
 
     if not save_dataframe_as_excel(df, saveDir): return
 

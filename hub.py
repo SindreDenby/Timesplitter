@@ -38,12 +38,17 @@ class Hub_UI:
             command= lambda: csv_splitter.reformat_into_company_billed(self.get_file_save_dir(), self.get_file_dir())
         ).grid(row=2, column= curCol)
 
+        tk.Button(mainFrame,
+            text=".csv -> Snitt pris.xlsx",
+            command= lambda: csv_splitter.reformat_into_average_hourly(self.get_file_save_dir(), self.get_file_dir())
+        ).grid(row=3, column= curCol)
+
         # Config Btn
         tk.Button(mainFrame,
             text="Config",
             command=configurator.main,
             bg="#4287f5"
-        ).grid(row=3, column=curCol)
+        ).grid(row=4, column=curCol)
 
         curCol += 1
 
@@ -72,7 +77,6 @@ class Hub_UI:
         self.fileNameEntry.grid(row=0, column=1)
 
         tk.Label(fileNameFrame, text=".xlsx").grid(row=0, column=2)
-
 
         root.mainloop()
 
