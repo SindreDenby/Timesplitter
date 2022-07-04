@@ -121,7 +121,6 @@ def main():
         first_time_setup()
         
     Hub_UI()
-    pass
-
+    
 if __name__ == '__main__':
     main()

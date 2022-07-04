@@ -91,7 +91,6 @@ class config_ui:
             for selected in listbox.curselection():
                 return (listboxNr, selected)
 
-
     def move_selected(self, box_index):
         selectedElement = self.get_selected_element()
         
@@ -102,7 +101,6 @@ class config_ui:
         self.projects[selectedElement[0]]['projects'].remove(
             self.projects[selectedElement[0]]['projects'][selectedElement[1]]
         )
-
 
         self.update_lists()
 
@@ -130,7 +128,6 @@ class config_ui:
 
         for i in range(4):
             selected_projects.extend(self.projects[i + 1]['projects'])
-
        
         for project in self.projects[0]['projects']:
    
@@ -138,7 +135,6 @@ class config_ui:
                 unselected_projects.remove(project)
                     
         return unselected_projects
-
 
 def main():
     config_ui()

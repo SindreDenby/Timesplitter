@@ -287,7 +287,6 @@ def reformat_into_employees(saveDir, fileName):
 
     tkinter.messagebox.showinfo("Konvertert", "Filen er lagret i " + saveDir)
 
-
 def reformat_into_projects(saveDir, fileName):
     if user_cancel_overwrite(saveDir): return
 
