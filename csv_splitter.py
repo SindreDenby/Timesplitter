@@ -94,9 +94,10 @@ def create_projects_shell(projectNames):
         projects.append({
             'name': name,
             'admin': 0,
-            'ekstern': 0,
+            'løpende': 0,
             'intern': 0,
             'fastpris': 0,
+            'salg': 0,
             'ikke valgt': 0
         })
     
@@ -156,7 +157,7 @@ def get_projects(csvFile):
 
     return (projects)
 
-project_types = ['admin.json', 'ekstern.json', 'intern.json', 'fastpris.json']
+project_types = ['admin.json', 'løpende.json', 'intern.json', 'fastpris.json', 'salg.json']
 def get_project_types():
     """
     Returnerer: 
@@ -219,7 +220,7 @@ def get_monthly_hour_average(csvFile):
     projectTypes = get_project_types()
 
     for row in csvFile[1:]:
-        if get_project_type(row[6], projectTypes) == 'ekstern':
+        if get_project_type(row[6], projectTypes) == 'løpende':
             date = format_month_year(row[15])
 
             if date not in [i['name'] for i in months]:

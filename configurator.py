@@ -3,14 +3,14 @@ import tkinter as tk
 import tkinter.messagebox
 import os
 
-project_types = ['projects.json','admin.json', 'ekstern.json', 'intern.json', 'fastpris.json']
+project_types = ['projects.json', 'admin.json', 'løpende.json', 'intern.json', 'fastpris.json', 'salg.json']
 appdata_dir = (os.getenv('APPDATA')).replace("\\", "/") + "/Timesplitter/config/"
 
 def create_listBox(box, row, col):
     listboxFrame = tk.Frame(box)
     listboxFrame.grid(row=row, column=col)
 
-    listbox = tk.Listbox(listboxFrame, width=40, height=30)
+    listbox = tk.Listbox(listboxFrame, width=30, height=30)
 
     listbox.pack(side = tk.LEFT, fill = tk.BOTH)
 

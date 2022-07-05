@@ -106,21 +106,24 @@ class Hub_UI:
         except AttributeError: 
             tkinter.messagebox.showinfo("File error", "Lagrinspunkt er ikke valgt")
 
-project_types = ['projects.json', 'admin.json', 'ekstern.json', 'intern.json', 'fastpris.json']
+project_types = ['projects.json', 'admin.json', 'løpende.json', 'intern.json', 'fastpris.json', 'salg.json']
 
 def first_time_setup():
-    # print("First time setup")
+
     os.makedirs(appdata_dir, exist_ok=True)
 
+    files = os.listdir(appdata_dir)
+
     for type in project_types:
-        with open(appdata_dir + type, "w+") as f:
-            f.write("[]")
+        if type not in files:
+            with open(appdata_dir + type, "w+") as f:
+                f.write("[]")
 
 def main():
-    if not os.path.exists(appdata_dir): 
-        first_time_setup()
+    
+    first_time_setup()
         
     Hub_UI()
-    
+
 if __name__ == '__main__':
     main()
