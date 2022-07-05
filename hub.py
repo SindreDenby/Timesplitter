@@ -3,6 +3,8 @@ import tkinter as tk
 import tkinter.messagebox
 import configurator
 import csv_splitter
+import adigo_icon
+import base64
 from tkinter import filedialog
 
 appdata_dir = (os.getenv('APPDATA')).replace("\\", "/") + "/Timesplitter/config/"
@@ -13,6 +15,19 @@ class Hub_UI:
         
         root.title("Timesplitter")
 
+        # icon = adigo_icon.icon
+        # icondata= base64.b64decode(icon)
+        # ## The temp file is icon.ico
+        # tempFile= "icon.ico"
+        # iconfile= open(tempFile,"wb")
+        # ## Extract the icon
+        # iconfile.write(icondata)
+        # iconfile.close()
+
+        # root.iconbitmap("icon.ico")
+
+        # os.remove(tempFile)
+        
         mainFrame = tk.Frame(root, padx=30, pady=30)
         mainFrame.grid()
 
