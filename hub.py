@@ -22,94 +22,116 @@ class Hub_UI:
 
         curCol = 0
 
+        tk.Button(mainFrame,
+            text="Kjør alle",
+            command= lambda: self.execute_all(),
+            bg = "#0aff74"
+        ).grid(row=0, column= curCol)
+
         # Ansatte Btn
         tk.Button(mainFrame,
             text=".csv -> Ansatte timer.xlsx",
-            command= lambda: csv_splitter.reformat_into_employees(self.get_file_save_dir(), self.get_file_dir())
-        ).grid(row=0, column= curCol)
+            command= lambda: csv_splitter.reformat_into_employees(self.get_file_save_dir(), self.get_csv_file())
+        ).grid(row=1, column= curCol)
 
         # Prosjekter til timer Btn
         tk.Button(mainFrame,
             text=".csv -> Prosjekt timer.xlsx",
-            command= lambda: csv_splitter.reformat_into_projects(self.get_file_save_dir(), self.get_file_dir())
-        ).grid(row=1, column= curCol)
+            command= lambda: csv_splitter.reformat_into_projects(self.get_file_save_dir(), self.get_csv_file())
+        ).grid(row=2, column= curCol)
 
         # Prosjekter til fakturert
         tk.Button(mainFrame,
             text=".csv -> Kunder fakturert.xlsx",
-            command= lambda: csv_splitter.reformat_into_company_billed(self.get_file_save_dir(), self.get_file_dir())
-        ).grid(row=2, column= curCol)
-
-        tk.Button(mainFrame,
-            text=".csv -> Snitt pris.xlsx",
-            command= lambda: csv_splitter.reformat_into_average_hourly(self.get_file_save_dir(), self.get_file_dir())
+            command= lambda: csv_splitter.reformat_into_company_billed(self.get_file_save_dir(), self.get_csv_file())
         ).grid(row=3, column= curCol)
 
         tk.Button(mainFrame,
-            text=".csv -> Avdeling fordeling.xlsx",
-            command= lambda: csv_splitter.reformat_into_division(self.get_file_save_dir(), self.get_file_dir())
+            text=".csv -> Snitt pris.xlsx",
+            command= lambda: csv_splitter.reformat_into_average_hourly(self.get_file_save_dir(), self.get_csv_file())
         ).grid(row=4, column= curCol)
+
+        tk.Button(mainFrame,
+            text=".csv -> Avdeling fordeling.xlsx",
+            command= lambda: csv_splitter.reformat_into_division(self.get_file_save_dir(), self.get_csv_file())
+        ).grid(row=5, column= curCol)
 
         # Config Btn
         tk.Button(mainFrame,
             text="Config",
             command=configurator.main,
             bg="#4287f5"
-        ).grid(row=5, column=curCol)
+        ).grid(row=6, column=curCol)
 
         curCol += 1
 
-        self.setFileBtn = tk.Button(mainFrame,
-            text="Set file",
-            command=self.set_file,
-            bg= "#03fca9"
-        )
-        self.setFileBtn.grid(row=0, column=curCol)
+        # Set file frame
+        setFileFrame = tk.Frame(mainFrame)
+        setFileFrame.grid(row=0, column=curCol)
+        setFileFrame.grid()
 
-        self.setDirBtn = tk.Button(mainFrame,
-            text="Set Save Directory",
+        tk.Label(setFileFrame, text=".csv fil:").grid(row=0, column=0)
+
+        self.csvFileInput = tk.Entry(setFileFrame, justify=tk.RIGHT, width=40)
+        self.csvFileInput.grid(row=0, column=1)
+
+        tk.Button(setFileFrame,
+            text="...",
+            command=self.set_file,
+        ).grid(row=0, column=2)
+
+        # Set directory frame
+
+        tk.Label(setFileFrame, text="Lagres i:").grid(row=1, column=0)
+
+        self.saveDirInput = tk.Entry(setFileFrame, justify=tk.RIGHT, width=40)
+        self.saveDirInput.grid(row=1, column=1)
+
+        tk.Button(setFileFrame,
+            text="...",
             command=self.set_save_dir,
-            bg= "#03fc6b"
-        )
-        self.setDirBtn.grid(row=1, column= curCol)
+        ).grid(row=1, column=2)
 
         # Filename frame
-        fileNameFrame = tk.Frame(mainFrame)
-        fileNameFrame.grid(row=2, column=curCol)
-        fileNameFrame.grid()
 
-        tk.Label(fileNameFrame, text="Filnavn:").grid(row=0, column=0)
+        tk.Label(setFileFrame, text="Filnavn:").grid(row=2, column=0)
 
-        self.fileNameEntry = tk.Entry(fileNameFrame, justify=tk.RIGHT)
-        self.fileNameEntry.grid(row=0, column=1)
+        self.fileNameEntry = tk.Entry(setFileFrame, justify=tk.RIGHT, width=40)
+        self.fileNameEntry.grid(row=2, column=1)
 
-        tk.Label(fileNameFrame, text=".xlsx").grid(row=0, column=2)
+        tk.Label(setFileFrame, text=".xlsx").grid(row=2, column=2)
 
         root.mainloop()
 
     def set_save_dir(self):
         dir = filedialog.askdirectory()
         if dir != "":
-            self.saveDir = dir
-            self.setDirBtn.config(text=self.saveDir)
+            self.saveDirInput.delete(0, tk.END)
+            self.saveDirInput.insert(0, dir)
 
     def set_file(self):
         file = filedialog.askopenfilename()
         if file != "":
-            self.fileDir = file
-            self.setFileBtn.config(text=self.fileDir)
+            self.csvFileInput.delete(0, tk.END)
+            self.csvFileInput.insert(0, file)
 
     def get_file_save_dir(self):
         try:
-            return f'{self.saveDir}/{self.fileNameEntry.get()}.xlsx'
+            return f'{self.saveDirInput.get()}/{self.fileNameEntry.get()}.xlsx'
         except AttributeError: 
             tkinter.messagebox.showinfo("File error", "Fil er ikke valgt")
 
-    def get_file_dir(self):
-        try:
-            return self.fileDir
-        except AttributeError: 
-            tkinter.messagebox.showinfo("File error", "Lagrinspunkt er ikke valgt")
+    def execute_all(self):
+        pass
+
+    def get_csv_file(self):
+        entryVal = self.csvFileInput.get()
+        if entryVal == "":
+            tkinter.messagebox.showinfo("File error", "Csv fil er ikke valgt")
+            return
+        
+        return entryVal
+        
 
 project_types = ['projects.json', 'admin.json', 'løpende.json', 'intern.json', 'fastpris.json', 'salg.json']
 
