@@ -7,10 +7,6 @@ from tkinter import filedialog
 
 appdata_dir = (os.getenv('APPDATA')).replace("\\", "/") + "/Timesplitter/config/"
 
-"""
-Use: py -3.9-64 -m PyInstaller -i "adigo icon.png" --distpath ./pyinstoutput/dist --workpath ./pyinstoutput/build --clean -w hub.py
-"""
-
 class Hub_UI: 
     def __init__(self):
         root = tk.Tk()
