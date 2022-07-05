@@ -8,7 +8,7 @@ from tkinter import filedialog
 appdata_dir = (os.getenv('APPDATA')).replace("\\", "/") + "/Timesplitter/config/"
 
 """
-Use: py -3.9-64 -m PyInstaller --distpath ./pyinstoutput/dist --workpath ./pyinstoutput/build --clean -w hub.py
+Use: py -3.9-64 -m PyInstaller -i "adigo icon.png" --distpath ./pyinstoutput/dist --workpath ./pyinstoutput/build --clean -w hub.py
 """
 
 class Hub_UI: 
@@ -82,7 +82,7 @@ class Hub_UI:
 
         # Set directory frame
 
-        tk.Label(setFileFrame, text="Lagres i:").grid(row=1, column=0)
+        tk.Label(setFileFrame, text="Lagres som:").grid(row=1, column=0)
 
         self.saveDirInput = tk.Entry(setFileFrame, justify=tk.RIGHT, width=40)
         self.saveDirInput.grid(row=1, column=1)
@@ -92,34 +92,27 @@ class Hub_UI:
             command=self.set_save_dir,
         ).grid(row=1, column=2)
 
-        # Filename frame
-
-        tk.Label(setFileFrame, text="Filnavn:").grid(row=2, column=0)
-
-        self.fileNameEntry = tk.Entry(setFileFrame, justify=tk.RIGHT, width=40)
-        self.fileNameEntry.grid(row=2, column=1)
-
-        tk.Label(setFileFrame, text=".xlsx").grid(row=2, column=2)
-
         root.mainloop()
 
     def set_save_dir(self):
-        dir = filedialog.askdirectory()
+        dir = filedialog.asksaveasfilename(defaultextension=".xlsx", filetypes=(('Excel file', '*.xlsx'), ("All Files", "*.*")))
         if dir != "":
             self.saveDirInput.delete(0, tk.END)
             self.saveDirInput.insert(0, dir)
 
     def set_file(self):
-        file = filedialog.askopenfilename()
+        file = filedialog.askopenfilename(defaultextension=".csv", filetypes=(('Comma seperated file', '*.csv'), ("All Files", "*.*")))
         if file != "":
             self.csvFileInput.delete(0, tk.END)
             self.csvFileInput.insert(0, file)
 
     def get_file_save_dir(self):
-        try:
-            return f'{self.saveDirInput.get()}/{self.fileNameEntry.get()}.xlsx'
-        except AttributeError: 
-            tkinter.messagebox.showinfo("File error", "Fil er ikke valgt")
+        entryVal = self.saveDirInput.get()
+        if entryVal == "":
+            tkinter.messagebox.showinfo("File error", "Filens lagringspunkt er ikke valgt")
+            return
+
+        return entryVal
 
     def execute_all(self):
         pass
