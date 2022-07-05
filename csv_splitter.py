@@ -142,7 +142,7 @@ def get_projects(csvFile):
     projectNames = get_available_projects(csvFile)
     save_as(appdata_dir + "projects.json", projectNames)
     projects = create_projects_shell(projectNames)
-    projectTypes = get_project_types()
+    projectTypes = read_project_types()
 
     run = False
     for row in csvFile:
@@ -158,7 +158,7 @@ def get_projects(csvFile):
     return (projects)
 
 project_types = ['admin.json', 'løpende.json', 'intern.json', 'fastpris.json', 'salg.json']
-def get_project_types():
+def read_project_types():
     """
     Returnerer: 
     [
@@ -187,7 +187,7 @@ def get_employee_names(csvFile):
 
 def get_employees_data(names, csvFile):
     employees = create_projects_shell(names)
-    projectTypes = get_project_types()
+    projectTypes = read_project_types()
 
     for row in csvFile[1:]:
         curNameIndex = get_object_index_by_name(row[13], employees)
@@ -215,9 +215,44 @@ def format_month_year(date):
     """
     return "-".join(date.split("-")[:2]) 
 
+def sum_all_keys(dictionary: dict):
+    sum = 0
+    for i in list(dictionary.items()):
+        try:
+            sum += float(i[1])
+        except ValueError: pass
+
+    return sum
+
+def get_division_names(csvFile):
+    return list(dict.fromkeys([row[11] for row in csvFile[1:]]))
+
+def get_divisions_percentage(csvFile):
+    divisionNames = get_division_names(csvFile)
+    divisionNames.append("total")
+    divisions = create_projects_shell(divisionNames)
+
+    projectTypes = read_project_types()
+
+    totalIndex = get_object_index_by_name('total', divisions)
+    for row in csvFile[1:]:
+        divisionIndex = get_object_index_by_name(row[11], divisions)
+        projectType = get_project_type(row[6], projectTypes)
+
+        divisions[divisionIndex][projectType] += float(row[16].replace(",", "."))
+        divisions[totalIndex][projectType] += float(row[16].replace(",", "."))
+
+    for i, division in enumerate(divisions):
+        sum = sum_all_keys(division)
+
+        for key in list(division.items())[1:]:
+            divisions[i][key[0]] = divisions[i][key[0]] / sum
+
+    return divisions
+
 def get_monthly_hour_average(csvFile):
     months = []
-    projectTypes = get_project_types()
+    projectTypes = read_project_types()
 
     for row in csvFile[1:]:
         if get_project_type(row[6], projectTypes) == 'løpende':
@@ -316,6 +351,21 @@ def reformat_into_average_hourly(saveDir, fileName):
     get_projects(csvFile)
     hourlyAverage = get_monthly_hour_average(csvFile)
     df = pandas.DataFrame(hourlyAverage)
+
+    if not save_dataframe_as_excel(df, saveDir): return
+
+    tkinter.messagebox.showinfo("Konvertert", "Filen er lagret i " + saveDir)
+
+def reformat_into_division(saveDir, fileName):
+    if user_cancel_overwrite(saveDir): return
+
+    csvFile = read_csv_file(fileName)
+
+    if check_document_invalid(csvFile): return
+
+    get_projects(csvFile)
+    divisions = get_divisions_percentage(csvFile)
+    df = pandas.DataFrame(divisions)
 
     if not save_dataframe_as_excel(df, saveDir): return
 

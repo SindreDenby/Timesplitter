@@ -45,12 +45,17 @@ class Hub_UI:
             command= lambda: csv_splitter.reformat_into_average_hourly(self.get_file_save_dir(), self.get_file_dir())
         ).grid(row=3, column= curCol)
 
+        tk.Button(mainFrame,
+            text=".csv -> Avdeling fordeling.xlsx",
+            command= lambda: csv_splitter.reformat_into_division(self.get_file_save_dir(), self.get_file_dir())
+        ).grid(row=4, column= curCol)
+
         # Config Btn
         tk.Button(mainFrame,
             text="Config",
             command=configurator.main,
             bg="#4287f5"
-        ).grid(row=4, column=curCol)
+        ).grid(row=5, column=curCol)
 
         curCol += 1
 
