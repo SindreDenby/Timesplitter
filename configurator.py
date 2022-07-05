@@ -1,7 +1,7 @@
 import json
 import tkinter as tk
-import tkinter.messagebox
 import os
+import adigo_icon
 
 project_types = ['projects.json', 'admin.json', 'løpende.json', 'intern.json', 'fastpris.json', 'salg.json', 'bedriftsutvikling.json']
 appdata_dir = (os.getenv('APPDATA')).replace("\\", "/") + "/Timesplitter/config/"
@@ -38,7 +38,9 @@ class config_ui:
         self.projects[0]['projects'] = self.get_unselected_projects()
 
         root = tk.Tk()
-
+        
+        root.title("Adigo Financial Analysis System Configuration Tool")
+        
         curCol = 0
 
         mainFrame = tk.Frame(root, padx=30, pady=30)
@@ -132,6 +134,7 @@ class config_ui:
                 unselected_projects.remove(project)
                     
         return unselected_projects
+
 
 def main():
     config_ui()

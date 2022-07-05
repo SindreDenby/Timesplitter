@@ -4,7 +4,6 @@ import tkinter.messagebox
 import configurator
 import csv_splitter
 import adigo_icon
-import base64
 from tkinter import filedialog
 
 appdata_dir = (os.getenv('APPDATA')).replace("\\", "/") + "/Timesplitter/config/"
@@ -15,19 +14,7 @@ class Hub_UI:
         
         root.title("Adigo Financial Analysis System")
 
-        icon = adigo_icon.icon
-        icondata= base64.b64decode(icon)
-        ## The temp file is icon.ico
-        tempFile= "icon.ico"
-        iconfile= open(tempFile,"wb")
-        ## Extract the icon
-        iconfile.write(icondata)
-        iconfile.close()
-
-        img = tk.PhotoImage(file="icon.ico")
-        root.tk.call("wm", 'iconphoto', root._w, img)
-
-        os.remove(tempFile)
+        adigo_icon.set_base64_icon(adigo_icon.icon, root)
 
         mainFrame = tk.Frame(root, padx=30, pady=30)
         mainFrame.grid()
@@ -136,7 +123,6 @@ class Hub_UI:
             return
         
         return entryVal
-        
 
 project_types = ['projects.json', 'admin.json', 'løpende.json', 'intern.json', 'fastpris.json', 'salg.json', 'bedriftsutvikling.json']
 
