@@ -13,21 +13,22 @@ class Hub_UI:
     def __init__(self):
         root = tk.Tk()
         
-        root.title("Timesplitter")
+        root.title("Adigo Financial Analasys System")
 
-        # icon = adigo_icon.icon
-        # icondata= base64.b64decode(icon)
-        # ## The temp file is icon.ico
-        # tempFile= "icon.ico"
-        # iconfile= open(tempFile,"wb")
-        # ## Extract the icon
-        # iconfile.write(icondata)
-        # iconfile.close()
+        icon = adigo_icon.icon
+        icondata= base64.b64decode(icon)
+        ## The temp file is icon.ico
+        tempFile= "icon.ico"
+        iconfile= open(tempFile,"wb")
+        ## Extract the icon
+        iconfile.write(icondata)
+        iconfile.close()
 
-        # root.iconbitmap("icon.ico")
+        img = tk.PhotoImage(file="icon.ico")
+        root.tk.call("wm", 'iconphoto', root._w, img)
 
-        # os.remove(tempFile)
-        
+        os.remove(tempFile)
+
         mainFrame = tk.Frame(root, padx=30, pady=30)
         mainFrame.grid()
 
@@ -137,7 +138,7 @@ class Hub_UI:
         return entryVal
         
 
-project_types = ['projects.json', 'admin.json', 'løpende.json', 'intern.json', 'fastpris.json', 'salg.json']
+project_types = ['projects.json', 'admin.json', 'løpende.json', 'intern.json', 'fastpris.json', 'salg.json', 'bedriftsutvikling.json']
 
 def first_time_setup():
 

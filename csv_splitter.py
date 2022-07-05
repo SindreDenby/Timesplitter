@@ -98,6 +98,7 @@ def create_projects_shell(projectNames):
             'intern': 0,
             'fastpris': 0,
             'salg': 0,
+            'bedriftsutvikling': 0,
             'ikke valgt': 0
         })
     
@@ -157,7 +158,7 @@ def get_projects(csvFile):
 
     return (projects)
 
-project_types = ['admin.json', 'løpende.json', 'intern.json', 'fastpris.json', 'salg.json']
+project_types = ['admin.json', 'løpende.json', 'intern.json', 'fastpris.json', 'salg.json', 'bedriftsutvikling.json']
 def read_project_types():
     """
     Returnerer: 
