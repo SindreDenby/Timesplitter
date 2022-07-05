@@ -13,7 +13,7 @@ class Hub_UI:
     def __init__(self):
         root = tk.Tk()
         
-        root.title("Adigo Financial Analasys System")
+        root.title("Adigo Financial Analysis System")
 
         icon = adigo_icon.icon
         icondata= base64.b64decode(icon)

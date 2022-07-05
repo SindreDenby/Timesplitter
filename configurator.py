@@ -59,11 +59,6 @@ class config_ui:
             
             curCol += 1
 
-        tk.Button(mainFrame,
-            command=self.save_config,
-            text="Save"
-        ).grid(row= 1, column=curCol)
-
         self.update_lists()
         root.mainloop()
 
@@ -102,6 +97,8 @@ class config_ui:
             self.projects[selectedElement[0]]['projects'][selectedElement[1]]
         )
 
+        self.save_config()
+
         self.update_lists()
 
     def update_lists(self):
@@ -119,7 +116,7 @@ class config_ui:
         self.projects[0]['projects'] = self.get_unselected_projects()
 
         self.update_lists()
-        tkinter.messagebox.showinfo("Lagret", "Config er lagret")
+        # tkinter.messagebox.showinfo("Lagret", "Config er lagret")
 
     def get_unselected_projects(self):
         unselected_projects = self.projects[0]['projects'].copy()
