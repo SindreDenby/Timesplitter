@@ -2,6 +2,7 @@ import json
 import pandas
 import os
 import csv
+import datetime
 import tkinter.messagebox
 
 appdata_dir = (os.getenv('APPDATA')).replace("\\", "/") + "/Timesplitter/config/"
@@ -216,6 +217,26 @@ def format_month_year(date):
     """
     return "-".join(date.split("-")[:2]) 
 
+def get_weeks_in_file(csvFile):
+    out = list(dict.fromkeys([get_week_number(i[15]) for i in csvFile[1:]]))
+    out.sort()
+    return out
+
+def get_weeks_hours(csvFile):
+    availableWeeks = get_weeks_in_file(csvFile)
+
+    weeks = create_projects_shell(availableWeeks)
+    projectTypes = read_project_types()
+
+    for row in csvFile[1:]:
+        weekNr = get_week_number(row[15])
+        projectType = get_project_type(row[6], projectTypes)
+        weekIndex = get_object_index_by_name(weekNr, weeks)
+
+        weeks [weekIndex][projectType] += float(row[16].replace(",","."))
+
+    return weeks
+
 def sum_all_keys(dictionary: dict):
     sum = 0
     for i in list(dictionary.items()):
@@ -251,6 +272,14 @@ def get_divisions_percentage(csvFile):
 
     return divisions
 
+def get_week_number(date):
+    """
+    Returns week number of date string
+
+    Ex: "2022-07-06" returns 27
+    """
+    return datetime.date(*[int(i) for i in date.split("-")]).isocalendar()[1]
+
 def get_monthly_hour_average(csvFile):
     months = []
     projectTypes = read_project_types()
@@ -282,18 +311,15 @@ def read_csv_file(fileName):
     Leser csv fil og reurnerer som 2 dimensional liste
     """
     try:
-
-     with open(fileName, newline='') as f:
-        reader = csv.reader(f, delimiter=";")
-        data = [tuple(row) for row in reader]
+        with open(fileName, newline='') as f:
+            reader = csv.reader(f, delimiter=";")
+            data = [tuple(row) for row in reader]
 
     except UnicodeDecodeError:
         tkinter.messagebox.showerror("Invalid", "Filen som leses av er feil eller korrupt")
 
     except PermissionError:
         tkinter.messagebox.showerror("Permission Error", "Fil er ikke tiljengelig/åpen i et annet program")
-
-    # save_as("test.json", data)
 
     return data
 
@@ -318,7 +344,7 @@ def reformat_into_employees(saveDir, fileName):
 
     if check_document_invalid(csvFile): return
 
-    projects = get_projects(csvFile)
+    get_projects(csvFile)
     employee_names = get_employee_names(csvFile)
 
     employees = get_employees_data(employee_names, csvFile)
@@ -372,3 +398,19 @@ def reformat_into_division(saveDir, fileName):
 
     tkinter.messagebox.showinfo("Konvertert", "Filen er lagret i " + saveDir)
 
+def reformat_into_hour_per_week(saveDir, fileName):
+    if user_cancel_overwrite(saveDir): return
+
+    csvFile = read_csv_file(fileName)
+
+    if check_document_invalid(csvFile): return
+
+    get_projects(csvFile)
+    weeks = get_weeks_hours(csvFile)
+    df = pandas.DataFrame(weeks)
+
+    df.rename(columns={'name': 'Uke Nr'}, inplace=True)
+
+    if not save_dataframe_as_excel(df, saveDir): return
+
+    tkinter.messagebox.showinfo("Konvertert", "Filen er lagret i " + saveDir)
