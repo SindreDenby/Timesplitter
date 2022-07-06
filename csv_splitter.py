@@ -208,12 +208,13 @@ def get_employees_data(csvFile):
 
     return employees    
 
-def check_document_invalid(excelFile, value):
+def check_document_invalid(excelFile, inputType):
     """
     Returns true if document is invalid
     """
-    if excelFile[0][0] == value: 
-        return False
+    if inputType == "timeoversikt":
+        if excelFile[0][0] == 'Kundenummer': 
+            return False
 
     tkinter.messagebox.showerror("Invalid", "Filen som leses av er feil eller korrupt")
     return True
@@ -355,9 +356,10 @@ def reformat(saveDir, fileName, exportType):
 
     csvFile = read_csv_file(fileName)
 
-    if check_document_invalid(csvFile, 'Kundenummer'): return
+    if check_document_invalid(csvFile, exportType['input']): return
 
-    get_projects(csvFile)
+    if exportType['input'] == 'timeoversikt': get_projects(csvFile)
+
     data = exportType['function'](csvFile)
     df = pandas.DataFrame(data)
 
@@ -370,11 +372,11 @@ def reformat(saveDir, fileName, exportType):
 
     tkinter.messagebox.showinfo("Konvertert", "Filen er lagret i " + saveDir)
 
-export_types = {
+timeoversikt_exports = {
     'employee_hours':{
         'name': 'Ansatte timer',
         'input': 'timeoversikt',
-        'description': "Deller opp ansatte i timer brukt på forskjellige prosjekt typer.",
+        'description': 'Deller opp ansatte i timer brukt på forskjellige prosjekt typer.',
         'function': get_employees_data
     },
     'project_hours':{
@@ -393,7 +395,7 @@ export_types = {
     'snitt_pris':{
         'name': 'Snitt timepris',
         'input': 'timeoversikt',
-        'description': "Deler opp i måndeder med timer brukt og gjennomsnitlig time lønn.",
+        'description': "Deler opp i måndeder med timer og gjennomsnitlig time lønn.\n(Henter kun fra prosjekter markert som \"løpende\")",
         'function': get_monthly_hour_average
     },
     'avdeling_fordeling':{

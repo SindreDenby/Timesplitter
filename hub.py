@@ -20,44 +20,9 @@ class Hub_UI:
         mainFrame = tk.Frame(root, padx=30, pady=30)
         mainFrame.grid()
 
-        curCol = 0
-
-        tk.Button(mainFrame,
-            text="Kjør alle",
-            state='disabled',
-            command= lambda: self.execute_all(),
-            bg = "#0aff74"
-        ).grid(row=0, column= curCol)
-
-        # Ansatte Btn
-        curRow = 1
-
-        # Export knapper
-        btns = []
-        for exportKey in csv_splitter.export_types :
-            btns.append(
-                tk.Button(mainFrame,
-                    text=csv_splitter.export_types[exportKey]['name'],
-                    command= lambda i = csv_splitter.export_types[exportKey]: 
-                        csv_splitter.reformat(self.get_file_save_dir(), self.get_csv_file(), i),
-                )
-            )
-            btns[len(btns) - 1].grid(row=curRow, column=curCol)
-            tooltip.create(btns[len(btns) - 1], csv_splitter.export_types[exportKey]['description'])
-            curRow += 1
-
-        # Config Btn
-        tk.Button(mainFrame,
-            text="Config",
-            command=configurator.main,
-            bg="#4287f5"
-        ).grid(row=curRow, column=curCol)
-
-        curCol += 1
-
         # Set file frame
         setFileFrame = tk.Frame(mainFrame)
-        setFileFrame.grid(row=0, column=curCol)
+        setFileFrame.grid(row=0, column=0, columnspan= 2)
         setFileFrame.grid()
 
         tk.Label(setFileFrame, text=".csv fil:").grid(row=0, column=0)
@@ -81,6 +46,33 @@ class Hub_UI:
             text="...",
             command=self.set_save_dir,
         ).grid(row=1, column=2)
+
+        tk.Label(mainFrame,
+            text="Timeoversikt.csv"
+        ).grid(row= 1, column=0)
+
+        curRow = 2
+
+        # Export knapper
+        btns = []
+        for exportKey in csv_splitter.timeoversikt_exports :
+            btns.append(
+                tk.Button(mainFrame,
+                    text=csv_splitter.timeoversikt_exports[exportKey]['name'],
+                    command= lambda i = csv_splitter.timeoversikt_exports[exportKey]: 
+                        csv_splitter.reformat(self.get_file_save_dir(), self.get_csv_file(), i),
+                )
+            )
+            btns[len(btns) - 1].grid(row=curRow, column=0)
+            tooltip.create(btns[len(btns) - 1], csv_splitter.timeoversikt_exports[exportKey]['description'])
+            curRow += 1
+
+        # Config Btn
+        tk.Button(mainFrame,
+            text="Config",
+            command=configurator.main,
+            bg="#4287f5"
+        ).grid(row=curRow, column=0)
 
         root.mainloop()
 
