@@ -224,6 +224,11 @@ def format_month_year(date):
 
     Ex: "2022-04-22" returns "2022-04"
     """
+    if "." in date:
+        datelist = date.split(".")[1:]
+        datelist.reverse()
+        return "-".join(datelist)
+
     return "-".join(date.split("-")[:2]) 
 
 def get_weeks_in_file(csvFile):
@@ -287,6 +292,11 @@ def get_week_number(date):
 
     Ex: "2022-07-06" returns 27
     """
+    if '.' in date:
+        datelist = [int(i) for i in date.split(".")]
+        datelist.reverse()
+        return datetime.date(*datelist).isocalendar()[1]
+
     return datetime.date(*[int(i) for i in date.split("-")]).isocalendar()[1]
 
 def get_monthly_hour_average(csvFile):
@@ -314,6 +324,14 @@ def get_monthly_hour_average(csvFile):
         months[i].pop('timeprisSum')
 
     return months
+
+def capitalize_dataframe_keys(dataframe: pandas.DataFrame):
+    formatData = {}
+
+    for col in dataframe.columns:
+        formatData[col] = col.capitalize()
+
+    dataframe.rename(columns=formatData, inplace=True)
 
 def read_csv_file(fileName):
     """
@@ -343,6 +361,8 @@ def reformat(saveDir, fileName, exportType):
     data = exportType['function'](csvFile)
     df = pandas.DataFrame(data)
 
+    capitalize_dataframe_keys(df)
+
     if "format" in exportType:
         df.rename(columns=exportType['format'], inplace=True)
 
@@ -361,13 +381,14 @@ export_types = {
         'name': 'Prosjekt timer',
         'input': 'timeoversikt',
         'description': "Deler opp i timer brukt på prosjekter.",
-        'function': get_projects
+        'function': get_projects,
     },
     'kunder_fakturert':{
         'name': 'Kunder fakturert',
         'input': 'timeoversikt',
         'description': "Deler opp kunder i timer og fakturert timer.",
-        'function': get_companies
+        'function': get_companies,
+        'format': {'Name': 'Kunde'}
     },
     'snitt_pris':{
         'name': 'Snitt timepris',
@@ -382,10 +403,10 @@ export_types = {
         'function': get_divisions_percentage
     },
     'time_per_uke':{
-        'name': 'Timer uke basis',
+        'name': 'Timer ukentlig',
         'input': 'timeoversikt',
         'description': "Deler opp i timer brukt på ukentlig basis.",
         'function': get_weeks_hours,
-        'format': {'name': 'Uke Nr'}
+        'format': {'Name': 'Uke Nr'}
     },
 }

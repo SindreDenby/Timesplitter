@@ -24,13 +24,13 @@ class Hub_UI:
 
         tk.Button(mainFrame,
             text="Kjør alle",
+            state='disabled',
             command= lambda: self.execute_all(),
             bg = "#0aff74"
         ).grid(row=0, column= curCol)
 
         # Ansatte Btn
         curRow = 1
-
 
         # Export knapper
         btns = []
@@ -43,7 +43,7 @@ class Hub_UI:
                 )
             )
             btns[len(btns) - 1].grid(row=curRow, column=curCol)
-            tooltip.CreateToolTip(btns[len(btns) - 1], csv_splitter.export_types[exportKey]['description'])
+            tooltip.create(btns[len(btns) - 1], csv_splitter.export_types[exportKey]['description'])
             curRow += 1
 
         # Config Btn
