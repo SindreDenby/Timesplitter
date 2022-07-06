@@ -159,7 +159,15 @@ def get_projects(csvFile):
 
     return (projects)
 
-project_types = ['admin.json', 'løpende.json', 'intern.json', 'fastpris.json', 'salg.json', 'bedriftsutvikling.json']
+project_types = [
+    'admin.json',
+    'løpende.json',
+    'intern.json',
+    'fastpris.json',
+    'salg.json',
+    'bedriftsutvikling.json'
+]
+
 def read_project_types():
     """
     Returnerer: 
@@ -180,14 +188,15 @@ def read_project_types():
             'projectType': projectType.split('.')[0],
             'projects': json.loads(f.read())
         })
-        f.close
+        f.close()
     return types
 
 def get_employee_names(csvFile):
     return list(dict.fromkeys([i[13] for i in csvFile[1:]]))
 
 
-def get_employees_data(names, csvFile):
+def get_employees_data(csvFile):
+    names = get_employee_names(csvFile)
     employees = create_projects_shell(names)
     projectTypes = read_project_types()
 
@@ -199,11 +208,11 @@ def get_employees_data(names, csvFile):
 
     return employees    
 
-def check_document_invalid(excelFile):
+def check_document_invalid(excelFile, value):
     """
     Returns true if document is invalid
     """
-    if excelFile[0][0] == "Kundenummer": 
+    if excelFile[0][0] == value: 
         return False
 
     tkinter.messagebox.showerror("Invalid", "Filen som leses av er feil eller korrupt")
@@ -323,94 +332,60 @@ def read_csv_file(fileName):
 
     return data
 
-def reformat_into_company_billed(saveDir, fileName):
-    if user_cancel_overwrite(saveDir): return
-    
-    csvFile = read_csv_file(fileName)
-
-    if check_document_invalid(csvFile): return
-
-    companies = get_companies(csvFile)
-    df = pandas.DataFrame(companies)
-
-    if not save_dataframe_as_excel(df, saveDir): return
-
-    tkinter.messagebox.showinfo("Konvertert", "Filen er lagret i " + saveDir)
-
-def reformat_into_employees(saveDir, fileName):
+def reformat(saveDir, fileName, exportType):
     if user_cancel_overwrite(saveDir): return
 
     csvFile = read_csv_file(fileName)
 
-    if check_document_invalid(csvFile): return
+    if check_document_invalid(csvFile, 'Kundenummer'): return
 
     get_projects(csvFile)
-    employee_names = get_employee_names(csvFile)
+    data = exportType['function'](csvFile)
+    df = pandas.DataFrame(data)
 
-    employees = get_employees_data(employee_names, csvFile)
-    df = pandas.DataFrame(employees)
-
-    if not save_dataframe_as_excel(df, saveDir): return
-
-    tkinter.messagebox.showinfo("Konvertert", "Filen er lagret i " + saveDir)
-
-def reformat_into_projects(saveDir, fileName):
-    if user_cancel_overwrite(saveDir): return
-
-    csvFile = read_csv_file(fileName)
-
-    if check_document_invalid(csvFile): return
-
-    projects = get_projects(csvFile)
-    df = pandas.DataFrame(projects)
+    if "format" in exportType:
+        df.rename(columns=exportType['format'], inplace=True)
 
     if not save_dataframe_as_excel(df, saveDir): return
 
     tkinter.messagebox.showinfo("Konvertert", "Filen er lagret i " + saveDir)
 
-def reformat_into_average_hourly(saveDir, fileName):
-    if user_cancel_overwrite(saveDir): return
-
-    csvFile = read_csv_file(fileName)
-
-    if check_document_invalid(csvFile): return
-
-    get_projects(csvFile)
-    hourlyAverage = get_monthly_hour_average(csvFile)
-    df = pandas.DataFrame(hourlyAverage)
-
-    if not save_dataframe_as_excel(df, saveDir): return
-
-    tkinter.messagebox.showinfo("Konvertert", "Filen er lagret i " + saveDir)
-
-def reformat_into_division(saveDir, fileName):
-    if user_cancel_overwrite(saveDir): return
-
-    csvFile = read_csv_file(fileName)
-
-    if check_document_invalid(csvFile): return
-
-    get_projects(csvFile)
-    divisions = get_divisions_percentage(csvFile)
-    df = pandas.DataFrame(divisions)
-
-    if not save_dataframe_as_excel(df, saveDir): return
-
-    tkinter.messagebox.showinfo("Konvertert", "Filen er lagret i " + saveDir)
-
-def reformat_into_hour_per_week(saveDir, fileName):
-    if user_cancel_overwrite(saveDir): return
-
-    csvFile = read_csv_file(fileName)
-
-    if check_document_invalid(csvFile): return
-
-    get_projects(csvFile)
-    weeks = get_weeks_hours(csvFile)
-    df = pandas.DataFrame(weeks)
-
-    df.rename(columns={'name': 'Uke Nr'}, inplace=True)
-
-    if not save_dataframe_as_excel(df, saveDir): return
-
-    tkinter.messagebox.showinfo("Konvertert", "Filen er lagret i " + saveDir)
+export_types = {
+    'employee_hours':{
+        'name': 'Ansatte timer',
+        'input': 'timeoversikt',
+        'description': "Deller opp ansatte i timer brukt på forskjellige prosjekt typer.",
+        'function': get_employees_data
+    },
+    'project_hours':{
+        'name': 'Prosjekt timer',
+        'input': 'timeoversikt',
+        'description': "Deler opp i timer brukt på prosjekter.",
+        'function': get_projects
+    },
+    'kunder_fakturert':{
+        'name': 'Kunder fakturert',
+        'input': 'timeoversikt',
+        'description': "Deler opp kunder i timer og fakturert timer.",
+        'function': get_companies
+    },
+    'snitt_pris':{
+        'name': 'Snitt timepris',
+        'input': 'timeoversikt',
+        'description': "Deler opp i måndeder med timer brukt og gjennomsnitlig time lønn.",
+        'function': get_monthly_hour_average
+    },
+    'avdeling_fordeling':{
+        'name': 'Avdeling timer',
+        'input': 'timeoversikt',
+        'description': "Deler opp avdelinger i prosent av tid brukt på forskjellige prosjekt typer.",
+        'function': get_divisions_percentage
+    },
+    'time_per_uke':{
+        'name': 'Timer uke basis',
+        'input': 'timeoversikt',
+        'description': "Deler opp i timer brukt på ukentlig basis.",
+        'function': get_weeks_hours,
+        'format': {'name': 'Uke Nr'}
+    },
+}

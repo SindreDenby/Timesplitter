@@ -4,6 +4,7 @@ import tkinter.messagebox
 import configurator
 import csv_splitter
 import adigo_icon
+import tooltip
 from tkinter import filedialog
 
 appdata_dir = (os.getenv('APPDATA')).replace("\\", "/") + "/Timesplitter/config/"
@@ -28,44 +29,29 @@ class Hub_UI:
         ).grid(row=0, column= curCol)
 
         # Ansatte Btn
-        tk.Button(mainFrame,
-            text=".csv -> Ansatte timer.xlsx",
-            command= lambda: csv_splitter.reformat_into_employees(self.get_file_save_dir(), self.get_csv_file())
-        ).grid(row=1, column= curCol)
+        curRow = 1
 
-        # Prosjekter til timer Btn
-        tk.Button(mainFrame,
-            text=".csv -> Prosjekt timer.xlsx",
-            command= lambda: csv_splitter.reformat_into_projects(self.get_file_save_dir(), self.get_csv_file())
-        ).grid(row=2, column= curCol)
 
-        # Prosjekter til fakturert
-        tk.Button(mainFrame,
-            text=".csv -> Kunder fakturert.xlsx",
-            command= lambda: csv_splitter.reformat_into_company_billed(self.get_file_save_dir(), self.get_csv_file())
-        ).grid(row=3, column= curCol)
-
-        tk.Button(mainFrame,
-            text=".csv -> Snitt pris.xlsx",
-            command= lambda: csv_splitter.reformat_into_average_hourly(self.get_file_save_dir(), self.get_csv_file())
-        ).grid(row=4, column= curCol)
-
-        tk.Button(mainFrame,
-            text=".csv -> Avdeling fordeling.xlsx",
-            command= lambda: csv_splitter.reformat_into_division(self.get_file_save_dir(), self.get_csv_file())
-        ).grid(row=5, column= curCol)
-
-        tk.Button(mainFrame,
-            text=".csv -> Avdeling fordeling.xlsx",
-            command= lambda: csv_splitter.reformat_into_hour_per_week(self.get_file_save_dir(), self.get_csv_file())
-        ).grid(row=6, column= curCol)
+        # Export knapper
+        btns = []
+        for exportKey in csv_splitter.export_types :
+            btns.append(
+                tk.Button(mainFrame,
+                    text=csv_splitter.export_types[exportKey]['name'],
+                    command= lambda i = csv_splitter.export_types[exportKey]: 
+                        csv_splitter.reformat(self.get_file_save_dir(), self.get_csv_file(), i),
+                )
+            )
+            btns[len(btns) - 1].grid(row=curRow, column=curCol)
+            tooltip.CreateToolTip(btns[len(btns) - 1], csv_splitter.export_types[exportKey]['description'])
+            curRow += 1
 
         # Config Btn
         tk.Button(mainFrame,
             text="Config",
             command=configurator.main,
             bg="#4287f5"
-        ).grid(row=7, column=curCol)
+        ).grid(row=curRow, column=curCol)
 
         curCol += 1
 
@@ -129,7 +115,15 @@ class Hub_UI:
         
         return entryVal
 
-project_types = ['projects.json', 'admin.json', 'løpende.json', 'intern.json', 'fastpris.json', 'salg.json', 'bedriftsutvikling.json']
+project_types = [
+    'projects.json',
+    'admin.json',
+    'løpende.json',
+    'intern.json',
+    'fastpris.json',
+    'salg.json',
+    'bedriftsutvikling.json'
+]
 
 def first_time_setup():
 
