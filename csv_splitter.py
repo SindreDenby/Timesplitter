@@ -347,11 +347,13 @@ def get_status_projects(csvFile):
         if projectType in ["løpende", "fastpris"]:
             projects.append({
                 'name': projectName,
-                'timer': get_nr(csvDict['Periode Timer Timer'][rowIndex]) ,
-                'netto': get_nr(csvDict['Periode Timer Netto'][rowIndex]),
-                'inntekt': get_nr(csvDict['Periode Annet Inntekt'][rowIndex]) ,
-                'kostnad': get_nr(csvDict['Periode Annet Kostnad'][rowIndex]),
-                'type': projectType
+                'type': projectType,
+                'timer antall': get_nr(csvDict['Periode Timer Timer'][rowIndex]) ,
+                'timer honorar': get_nr(csvDict['Periode Timer Honorar'][rowIndex]),
+                'timer kostnadd': get_nr(csvDict['Periode Timer Kostnad'][rowIndex]),
+                'annet inntekt': get_nr(csvDict['Periode Annet Inntekt'][rowIndex]) ,
+                'annet kostnad': get_nr(csvDict['Periode Annet Kostnad'][rowIndex]),
+                'resultat': get_nr(csvDict['Periode Totalt Netto'][rowIndex]),
             })
 
 
