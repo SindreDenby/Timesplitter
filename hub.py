@@ -91,6 +91,7 @@ class Hub_UI:
             btns[len(btns) - 1].grid(row=curRow, column=1)
             tooltip.create(btns[len(btns) - 1], csv_splitter.prosjektstatus_exports[exportKey]['description'])
             curRow += 1
+
         root.mainloop()
 
     def set_save_dir(self):
