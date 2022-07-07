@@ -10,7 +10,7 @@ def create_listBox(box, row, col):
     listboxFrame = tk.Frame(box)
     listboxFrame.grid(row=row, column=col)
 
-    listbox = tk.Listbox(listboxFrame, width=30, height=30)
+    listbox = tk.Listbox(listboxFrame, width=30, height=30, selectmode='extended')
 
     listbox.pack(side = tk.LEFT, fill = tk.BOTH)
 
@@ -79,25 +79,29 @@ class config_ui:
             f.close()
         return loaded_project_types
 
-    def get_selected_element(self):
+    def get_selected_elements(self):
         """
-        Returnerer: (listboxNr: int, listBoxIndex: int)
+        Returnerer: (listboxNr: int, list of selected indexes: (1, 3, 6))
         """
 
         for listboxNr, listbox in enumerate(self.project_list_boxes) :
             for selected in listbox.curselection():
-                return (listboxNr, selected)
+                return (listboxNr, listbox.curselection())
 
     def move_selected(self, box_index):
-        selectedElement = self.get_selected_element()
-        
-        self.projects[box_index]['projects'].append(
-            self.projects[selectedElement[0]]['projects'][selectedElement[1]]
-        )
+        """
+        Moves selcted to box_index
+        """
+        selectedElements = self.get_selected_elements()
 
-        self.projects[selectedElement[0]]['projects'].remove(
-            self.projects[selectedElement[0]]['projects'][selectedElement[1]]
-        )
+        insertBoxIndex = box_index
+        oldBoxIndex = selectedElements[0]
+
+        selectedProjectNames = [self.projects[oldBoxIndex]['projects'][i] for i in selectedElements[1]]
+
+        for projectName in selectedProjectNames:
+            self.projects[insertBoxIndex]['projects'].append(projectName)
+            self.projects[oldBoxIndex]['projects'].remove(projectName)
 
         self.save_config()
 
@@ -110,7 +114,7 @@ class config_ui:
     def save_config(self):
         for projectNr in range(len(self.projects) - 1):
             f = open(appdata_dir + self.projects[projectNr + 1]['name'], 'w')
-            f.write(json.dumps(self.projects[projectNr + 1]['projects'], indent=2))
+            f.write(json.dumps(list(dict.fromkeys(self.projects[projectNr + 1]['projects'])), indent=2))
             f.close()
 
         self.projects = self.read_files()
@@ -125,7 +129,7 @@ class config_ui:
 
         selected_projects = []
 
-        for i in range(4):
+        for i in range(len(project_types) - 1):
             selected_projects.extend(self.projects[i + 1]['projects'])
        
         for project in self.projects[0]['projects']:
