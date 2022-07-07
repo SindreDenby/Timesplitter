@@ -1,7 +1,6 @@
 import json
 import tkinter as tk
 import os
-import adigo_icon
 
 project_types = ['projects.json', 'admin.json', 'løpende.json', 'intern.json', 'fastpris.json', 'salg.json', 'bedriftsutvikling.json']
 appdata_dir = (os.getenv('APPDATA')).replace("\\", "/") + "/Timesplitter/config/"
