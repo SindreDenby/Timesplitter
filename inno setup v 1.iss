@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Adigo Financial Analysis System"
-#define MyAppVersion "1.6.2"
+#define MyAppVersion "1.6.3"
 #define MyAppPublisher "Sindre Denby"
 #define MyAppURL "https://github.com/SindreDenby/Timesplitter"
 #define MyAppExeName "hub.exe"
