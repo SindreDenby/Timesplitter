@@ -35,8 +35,6 @@ class Hub_UI:
             command=self.set_file,
         ).grid(row=0, column=2)
 
-        # Set directory frame
-
         tk.Label(setFileFrame, text="Lagres som:").grid(row=1, column=0)
 
         self.saveDirInput = tk.Entry(setFileFrame, justify=tk.RIGHT, width=40)
@@ -46,6 +44,13 @@ class Hub_UI:
             text="...",
             command=self.set_save_dir,
         ).grid(row=1, column=2)
+
+        # Config Btn
+        tk.Button(setFileFrame,
+            text="Config",
+            command=configurator.main,
+            bg="#4287f5"
+        ).grid(row=0, column=3, rowspan=2)
 
         tk.Label(mainFrame,
             text="Timeoversikt.csv"
@@ -60,20 +65,32 @@ class Hub_UI:
                 tk.Button(mainFrame,
                     text=csv_splitter.timeoversikt_exports[exportKey]['name'],
                     command= lambda i = csv_splitter.timeoversikt_exports[exportKey]: 
-                        csv_splitter.reformat(self.get_file_save_dir(), self.get_csv_file(), i),
+                        csv_splitter.reformat_timeoversikt(self.get_file_save_dir(), self.get_csv_file(), i),
+                    width=17
                 )
             )
             btns[len(btns) - 1].grid(row=curRow, column=0)
             tooltip.create(btns[len(btns) - 1], csv_splitter.timeoversikt_exports[exportKey]['description'])
             curRow += 1
 
-        # Config Btn
-        tk.Button(mainFrame,
-            text="Config",
-            command=configurator.main,
-            bg="#4287f5"
-        ).grid(row=curRow, column=0)
 
+        curRow = 2
+        tk.Label(mainFrame,
+            text="Prosjektstatus.csv"
+        ).grid(row= 1, column=1)
+
+        for exportKey in csv_splitter.prosjektstatus_exports :
+            btns.append(
+                tk.Button(mainFrame,
+                    text=csv_splitter.prosjektstatus_exports[exportKey]['name'],
+                    command= lambda i = csv_splitter.prosjektstatus_exports[exportKey]: 
+                        csv_splitter.reformat_prosjektstatus(self.get_file_save_dir(), self.get_csv_file(), i),
+                    width=17
+                )
+            )
+            btns[len(btns) - 1].grid(row=curRow, column=1)
+            tooltip.create(btns[len(btns) - 1], csv_splitter.prosjektstatus_exports[exportKey]['description'])
+            curRow += 1
         root.mainloop()
 
     def set_save_dir(self):

@@ -108,11 +108,10 @@ def create_projects_shell(projectNames):
 def get_available_projects(csvFile):
     projects = []
 
-    for row in csvFile:
+    for row in csvFile[1:]:
         projects.append(row[6])
 
     projects = list(dict.fromkeys(projects))
-    projects.remove('Prosjektnavn')
 
     return projects
 
@@ -146,18 +145,14 @@ def get_projects(csvFile):
     projects = create_projects_shell(projectNames)
     projectTypes = read_project_types()
 
-    run = False
-    for row in csvFile:
-        if run:
-            if row[6] in projectNames:
-                projectIndex = get_object_index_by_name(row[6], projects)
-                projectType = get_project_type(row[6], projectTypes)
+    for row in csvFile[1:]:
+        projectIndex = get_object_index_by_name(row[6], projects)
+        projectType = get_project_type(row[6], projectTypes)
 
-                projects[projectIndex][projectType] += float(row[16].replace(",", '.'))
+        projects[projectIndex][projectType] += float(row[16].replace(",", '.'))
 
-        run = True
 
-    return (projects)
+    return projects
 
 project_types = [
     'admin.json',
@@ -208,15 +203,15 @@ def get_employees_data(csvFile):
 
     return employees    
 
-def check_document_invalid(excelFile, inputType):
+def check_document_invalid(excelFile, cornerVal, type):
     """
     Returns true if document is invalid
     """
-    if inputType == "timeoversikt":
-        if excelFile[0][0] == 'Kundenummer': 
-            return False
 
-    tkinter.messagebox.showerror("Invalid", "Filen som leses av er feil eller korrupt")
+    if excelFile[0][0] == cornerVal: 
+        return False
+
+    tkinter.messagebox.showerror("Invalid", f"Filen som leses av er feil eller korrupt\n\nSjekk at csv filen er av typen {type}")
     return True
 
 def format_month_year(date):
@@ -300,6 +295,16 @@ def get_week_number(date):
 
     return datetime.date(*[int(i) for i in date.split("-")]).isocalendar()[1]
 
+def create_csv_dict(csvFile):
+    csvDict = {}
+    
+    for colIndex, key in enumerate(csvFile[0]) :
+        csvDict[key] = []
+        for row in csvFile[1:]:
+            csvDict[key].append(row[colIndex])
+
+    return csvDict
+
 def get_monthly_hour_average(csvFile):
     months = []
     projectTypes = read_project_types()
@@ -326,6 +331,32 @@ def get_monthly_hour_average(csvFile):
 
     return months
 
+def get_nr(val):
+    return float(val.replace(",", "."))
+
+def get_status_projects(csvFile):
+    projects = []
+    projectTypes = read_project_types()
+
+    csvDict = create_csv_dict(csvFile)
+
+    for rowIndex, nok in enumerate(csvDict['Valuta']):
+        projectName = csvDict['Prosjektnavn'][rowIndex]
+        projectType = get_project_type(projectName, projectTypes)
+
+        if projectType == "løpende" or projectType == "fastpris":
+            projects.append({
+                'name': projectName,
+                'timer': get_nr(csvDict['Periode Timer Timer'][rowIndex]) ,
+                'netto': get_nr(csvDict['Periode Timer Netto'][rowIndex]),
+                'inntekt': get_nr(csvDict['Periode Annet Inntekt'][rowIndex]) ,
+                'kostnad': get_nr(csvDict['Periode Annet Kostnad'][rowIndex]),
+                'type': projectType
+            })
+
+
+    return projects
+
 def capitalize_dataframe_keys(dataframe: pandas.DataFrame):
     formatData = {}
 
@@ -351,14 +382,33 @@ def read_csv_file(fileName):
 
     return data
 
-def reformat(saveDir, fileName, exportType):
+def reformat_timeoversikt(saveDir, fileName, exportType):
     if user_cancel_overwrite(saveDir): return
 
     csvFile = read_csv_file(fileName)
 
-    if check_document_invalid(csvFile, exportType['input']): return
+    if check_document_invalid(csvFile, 'Kundenummer', exportType['input']): return
 
-    if exportType['input'] == 'timeoversikt': get_projects(csvFile)
+    get_projects(csvFile)
+
+    data = exportType['function'](csvFile)
+    df = pandas.DataFrame(data)
+
+    capitalize_dataframe_keys(df)
+
+    if "format" in exportType:
+        df.rename(columns=exportType['format'], inplace=True)
+
+    if not save_dataframe_as_excel(df, saveDir): return
+
+    tkinter.messagebox.showinfo("Konvertert", "Filen er lagret i " + saveDir)
+
+def reformat_prosjektstatus(saveDir, fileName, exportType):
+    if user_cancel_overwrite(saveDir): return
+
+    csvFile = read_csv_file(fileName)
+
+    if check_document_invalid(csvFile, 'Prosjektnummer', exportType['input']): return
 
     data = exportType['function'](csvFile)
     df = pandas.DataFrame(data)
@@ -375,40 +425,49 @@ def reformat(saveDir, fileName, exportType):
 timeoversikt_exports = {
     'employee_hours':{
         'name': 'Ansatte timer',
-        'input': 'timeoversikt',
+        'input': 'Timeoversikt',
         'description': 'Deller opp ansatte i timer brukt på forskjellige prosjekt typer.',
         'function': get_employees_data
     },
     'project_hours':{
         'name': 'Prosjekt timer',
-        'input': 'timeoversikt',
+        'input': 'Timeoversikt',
         'description': "Deler opp i timer brukt på prosjekter.",
         'function': get_projects,
     },
     'kunder_fakturert':{
         'name': 'Kunder fakturert',
-        'input': 'timeoversikt',
+        'input': 'Timeoversikt',
         'description': "Deler opp kunder i timer og fakturert timer.",
         'function': get_companies,
         'format': {'Name': 'Kunde'}
     },
     'snitt_pris':{
         'name': 'Snitt timepris',
-        'input': 'timeoversikt',
-        'description': "Deler opp i måndeder med timer og gjennomsnitlig time lønn.\n(Henter kun fra prosjekter markert som \"løpende\")",
+        'input': 'Timeoversikt',
+        'description': 'Deler opp i måndeder med timer og gjennomsnitlig time lønn.\n(Henter kun fra prosjekter markert som "løpende")',
         'function': get_monthly_hour_average
     },
     'avdeling_fordeling':{
         'name': 'Avdeling timer',
-        'input': 'timeoversikt',
+        'input': 'Timeoversikt',
         'description': "Deler opp avdelinger i prosent av tid brukt på forskjellige prosjekt typer.",
         'function': get_divisions_percentage
     },
     'time_per_uke':{
         'name': 'Timer ukentlig',
-        'input': 'timeoversikt',
+        'input': 'Timeoversikt',
         'description': "Deler opp i timer brukt på ukentlig basis.",
         'function': get_weeks_hours,
         'format': {'Name': 'Uke Nr'}
     },
+}
+
+prosjektstatus_exports ={
+    'lapende_fast':{
+        'name': 'Løpende og fast',
+        'input': 'Prosjektstatus',
+        'description': 'Henter antall timer, netto, inntekt og kostnad fra prosjekter markert som "løpende" of "fastpris".',
+        'function': get_status_projects
+    }
 }
