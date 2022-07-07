@@ -344,7 +344,7 @@ def get_status_projects(csvFile):
         projectName = csvDict['Prosjektnavn'][rowIndex]
         projectType = get_project_type(projectName, projectTypes)
 
-        if projectType == "løpende" or projectType == "fastpris":
+        if projectType in ["løpende", "fastpris"]:
             projects.append({
                 'name': projectName,
                 'timer': get_nr(csvDict['Periode Timer Timer'][rowIndex]) ,
@@ -467,7 +467,7 @@ prosjektstatus_exports ={
     'lapende_fast':{
         'name': 'Løpende og fast',
         'input': 'Prosjektstatus',
-        'description': 'Henter antall timer, netto, inntekt og kostnad fra prosjekter markert som "løpende" of "fastpris".',
+        'description': 'Henter antall timer, netto, inntekt og kostnad for prosjekter markert som "løpende" of "fastpris".',
         'function': get_status_projects
     }
 }
