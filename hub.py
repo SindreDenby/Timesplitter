@@ -17,10 +17,6 @@ class Hub_UI:
 
         adigo_icon.set_base64_icon(adigo_icon.icon, root)
 
-        style = ttk.Style(root)
-
-        style.theme_use('vista')
-
         mainFrame = tk.Frame(root, padx=30, pady=30)
         mainFrame.grid()
 
@@ -67,7 +63,7 @@ class Hub_UI:
                 ttk.Button(mainFrame,
                     text=csv_splitter.timeoversikt_exports[exportKey]['name'],
                     command= lambda i = csv_splitter.timeoversikt_exports[exportKey]: 
-                        csv_splitter.reformat_timeoversikt(self.get_file_save_dir(), self.get_csv_file(), i),
+                        csv_splitter.reformat_csv_file(self.get_file_save_dir(), self.get_csv_file(), i),
                     width=17
                 )
             )
@@ -78,20 +74,23 @@ class Hub_UI:
 
         curRow = 2
         ttk.Label(mainFrame,
-            text="Prosjektstatus.csv"
+            text="Andre .csv typer"
         ).grid(row= 1, column=1)
 
-        for exportKey in csv_splitter.prosjektstatus_exports :
+        for exportKey in csv_splitter.other_exports :
             btns.append(
                 ttk.Button(mainFrame,
-                    text=csv_splitter.prosjektstatus_exports[exportKey]['name'],
-                    command= lambda i = csv_splitter.prosjektstatus_exports[exportKey]: 
-                        csv_splitter.reformat_prosjektstatus(self.get_file_save_dir(), self.get_csv_file(), i),
+                    text=csv_splitter.other_exports[exportKey]['name'],
+                    command= lambda i = csv_splitter.other_exports[exportKey]: 
+                        csv_splitter.reformat_csv_file(self.get_file_save_dir(), self.get_csv_file(), i),
                     width=17
                 )
             )
             btns[len(btns) - 1].grid(row=curRow, column=1)
-            tooltip.create(btns[len(btns) - 1], csv_splitter.prosjektstatus_exports[exportKey]['description'])
+            tooltip.create(btns[len(btns) - 1], 
+                f"Hentes fra {csv_splitter.other_exports[exportKey]['input']}.csv"
+                f"\n\n{csv_splitter.other_exports[exportKey]['description']}"
+            )
             curRow += 1
 
         ttk.Button(mainFrame,

@@ -363,12 +363,54 @@ def get_status_projects(csvFile):
     return projects
 
 def capitalize_dataframe_keys(dataframe: pandas.DataFrame):
+    """
+    Kapitaliserer alle kolonne titler i en dataframe
+    """
     formatData = {}
 
     for col in dataframe.columns:
         formatData[col] = col.capitalize()
 
     dataframe.rename(columns=formatData, inplace=True)
+
+def get_billed_weekly(csvFile):
+
+    csvDict = create_csv_dict(csvFile)
+    companies_billed = []
+    week_numbers = list(dict.fromkeys([get_week_number(i) for i in csvDict['Fakturadato']]))
+    week_numbers.sort()
+
+    for row, i in enumerate(csvDict['Fakturanr.']):
+
+        if csvDict['Kundenavn'][row] not in [i['name'] for i in companies_billed]:
+            company = {
+                'name': csvDict['Kundenavn'][row]
+            }
+            for weekNr in week_numbers:
+                company[str(weekNr)] = 0
+
+            companies_billed.append(company)
+        
+        companyIndex = get_object_index_by_name(csvDict['Kundenavn'][row], companies_billed)
+        weekNr = get_week_number(csvDict['Fakturadato'][row])
+
+        companies_billed[companyIndex][str(weekNr)] += get_nr(csvDict['Beløp inkl. mva'][row])
+
+    for i, company in enumerate(companies_billed):
+        companies_billed[i]['sum'] = sum_all_keys(company)
+
+    sum = {'name': 'sum'}
+    for weekNr in week_numbers:
+        weekSum = 0
+        for company in companies_billed:
+            weekSum += company[str(weekNr)]
+        sum[str(weekNr)] = weekSum
+
+    sum['sum'] = sum_all_keys(sum)
+
+    companies_billed.append(sum)
+
+    return companies_billed
 
 def read_csv_file(fileName):
     """
@@ -387,33 +429,14 @@ def read_csv_file(fileName):
 
     return data
 
-def reformat_timeoversikt(saveDir, fileName, exportType):
+def reformat_csv_file(saveDir, fileName, exportType):
     if user_cancel_overwrite(saveDir): return
 
     csvFile = read_csv_file(fileName)
 
-    if check_document_invalid(csvFile, 'Kundenummer', exportType['input']): return
+    if check_document_invalid(csvFile, exportType['corner'], exportType['input']): return
 
-    get_projects(csvFile)
-
-    data = exportType['function'](csvFile)
-    df = pandas.DataFrame(data)
-
-    capitalize_dataframe_keys(df)
-
-    if "format" in exportType:
-        df.rename(columns=exportType['format'], inplace=True)
-
-    if not save_dataframe_as_excel(df, saveDir): return
-
-    tkinter.messagebox.showinfo("Konvertert", "Filen er lagret i " + saveDir)
-
-def reformat_prosjektstatus(saveDir, fileName, exportType):
-    if user_cancel_overwrite(saveDir): return
-
-    csvFile = read_csv_file(fileName)
-
-    if check_document_invalid(csvFile, 'Prosjektnummer', exportType['input']): return
+    if exportType['input'] == "Timeoversikt": get_projects(csvFile)
 
     data = exportType['function'](csvFile)
     df = pandas.DataFrame(data)
@@ -432,47 +455,61 @@ timeoversikt_exports = {
         'name': 'Ansatte timer',
         'input': 'Timeoversikt',
         'description': 'Deller opp ansatte i timer brukt på forskjellige prosjekt typer.',
-        'function': get_employees_data
+        'function': get_employees_data,
+        'corner': 'Kundenummer'
     },
     'project_hours':{
         'name': 'Prosjekt timer',
         'input': 'Timeoversikt',
         'description': "Deler opp i timer brukt på prosjekter.",
         'function': get_projects,
+        'corner': 'Kundenummer'
     },
     'kunder_fakturert':{
         'name': 'Kunder fakturert',
         'input': 'Timeoversikt',
         'description': "Deler opp kunder i timer og fakturert timer.",
         'function': get_companies,
-        'format': {'Name': 'Kunde'}
+        'format': {'Name': 'Kunde'},
+        'corner': 'Kundenummer'
     },
     'snitt_pris':{
         'name': 'Snitt timepris',
         'input': 'Timeoversikt',
         'description': 'Deler opp i måndeder med timer og gjennomsnitlig time lønn.\n(Henter kun fra prosjekter markert som "løpende")',
-        'function': get_monthly_hour_average
+        'function': get_monthly_hour_average,
+        'corner': 'Kundenummer'
     },
     'avdeling_fordeling':{
         'name': 'Avdeling timer',
         'input': 'Timeoversikt',
         'description': "Deler opp avdelinger i prosent av tid brukt på forskjellige prosjekt typer.",
-        'function': get_divisions_percentage
+        'function': get_divisions_percentage,
+        'corner': 'Kundenummer'
     },
     'time_per_uke':{
         'name': 'Timer ukentlig',
         'input': 'Timeoversikt',
         'description': "Deler opp i timer brukt på ukentlig basis.",
         'function': get_weeks_hours,
-        'format': {'Name': 'Uke Nr'}
+        'format': {'Name': 'Uke Nr'},
+        'corner': 'Kundenummer'
     },
 }
 
-prosjektstatus_exports ={
+other_exports ={
     'lapende_fast':{
-        'name': 'Løpende og fast',
+        'name': 'Projsektstatus',
         'input': 'Prosjektstatus',
         'description': 'Henter antall timer, netto, inntekt og kostnad for prosjekter markert som "løpende" of "fastpris".',
-        'function': get_status_projects
+        'function': get_status_projects,
+        'corner': 'Prosjektnummer'
+    },
+    'faktura_ukentlig':{
+        'name': 'Faktura ukentlig',
+        'input': 'Fakturaoversikt',
+        'description': 'Henter faktura fra kunder på ukentlig basis.',
+        'function': get_billed_weekly,
+        'corner': 'Fakturanr.'
     }
 }
