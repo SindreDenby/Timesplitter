@@ -295,6 +295,22 @@ def get_week_number(date):
 
     return datetime.date(*[int(i) for i in date.split("-")]).isocalendar()[1]
 
+def date_has_been(date):
+    """
+    Returns true if date has been
+    """
+    if date == "": return False
+
+    if '.' in date: 
+        dateList = [int(i) for i in date.split(".")]
+        dateList.reverse()
+        inp_date = datetime.date(*dateList)
+        return datetime.date.today() > inp_date
+
+    inp_date = datetime.date(*[int(i) for i in date.split("-")])
+
+    return datetime.date.today() > inp_date
+
 def create_csv_dict(csvFile):
     """
     Lager et dict fra en csv fil med kollonetitler som keys
@@ -361,6 +377,8 @@ def get_status_projects(csvFile):
 
     return projects
 
+
+
 def capitalize_dataframe_keys(dataframe: pandas.DataFrame):
     """
     Kapitaliserer alle kolonne titler i en dataframe
@@ -372,18 +390,30 @@ def capitalize_dataframe_keys(dataframe: pandas.DataFrame):
 
     dataframe.rename(columns=formatData, inplace=True)
 
+def get_week_numbers(csvDict):
+    weekNums = []
+
+    for row, i in enumerate(csvDict['Forfallsdato']):
+        if not date_has_been(csvDict['Forfallsdato'][row]):
+            if i != "": weekNums.append(get_week_number(i))
+            
+
+    return weekNums
+
 def get_billed_weekly(csvFile):
 
     csvDict = create_csv_dict(csvFile)
     companies_billed = []
-    week_numbers = list(dict.fromkeys([get_week_number(i) for i in csvDict['Fakturadato']]))
+    week_numbers = get_week_numbers(csvDict)
     week_numbers.sort()
 
     for row, i in enumerate(csvDict['Fakturanr.']):
 
         if csvDict['Kundenavn'][row] not in [i['name'] for i in companies_billed]:
             company = {
-                'name': csvDict['Kundenavn'][row]
+                'name': csvDict['Kundenavn'][row],
+                'forfalt': 0,
+                'ingen forfallsdato': 0
             }
             for weekNr in week_numbers:
                 company[str(weekNr)] = 0
@@ -391,19 +421,34 @@ def get_billed_weekly(csvFile):
             companies_billed.append(company)
         
         companyIndex = get_object_index_by_name(csvDict['Kundenavn'][row], companies_billed)
-        weekNr = get_week_number(csvDict['Fakturadato'][row])
+        
+        beloop = get_nr(csvDict['Beløp inkl. mva'][row])
 
-        companies_billed[companyIndex][str(weekNr)] += get_nr(csvDict['Betalt'][row])
+        if csvDict['Forfallsdato'][row] != "":
+            weekNr = get_week_number(csvDict['Forfallsdato'][row])
+            if date_has_been(csvDict['Forfallsdato'][row]):
+                companies_billed[companyIndex]['forfalt'] += beloop
+            else:
+                companies_billed[companyIndex][str(weekNr)] += beloop
+        else: 
+            companies_billed[companyIndex]['ingen forfallsdato'] += beloop
 
     for i, company in enumerate(companies_billed):
         companies_billed[i]['sum'] = sum_all_keys(company)
 
-    sum = {'name': 'Uke sum'}
+    sum = {'name': 'Uke sum',
+        'forfalt': 0,
+        'ingen forfallsdato': 0
+    }
     for weekNr in week_numbers:
         weekSum = 0
         for company in companies_billed:
             weekSum += company[str(weekNr)]
         sum[str(weekNr)] = weekSum
+
+    for company in companies_billed:
+        sum['forfalt'] += company['forfalt']
+        sum['ingen forfallsdato'] += company['ingen forfallsdato']
 
     sum['sum'] = sum_all_keys(sum)
 
