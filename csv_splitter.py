@@ -359,7 +359,6 @@ def get_status_projects(csvFile):
                 'resultat': get_nr(csvDict['Periode Totalt Netto'][rowIndex]),
             })
 
-
     return projects
 
 def capitalize_dataframe_keys(dataframe: pandas.DataFrame):
@@ -399,7 +398,7 @@ def get_billed_weekly(csvFile):
     for i, company in enumerate(companies_billed):
         companies_billed[i]['sum'] = sum_all_keys(company)
 
-    sum = {'name': 'sum'}
+    sum = {'name': 'Uke sum'}
     for weekNr in week_numbers:
         weekSum = 0
         for company in companies_billed:
