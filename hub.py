@@ -110,7 +110,7 @@ class Hub_UI:
             self.saveDirInput.insert(0, dir)
 
     def set_file(self):
-        file = filedialog.askopenfilename(defaultextension=".csv", filetypes=(('Comma seperated file', '*.csv'), ("All Files", "*.*")))
+        file = filedialog.askopenfilename(defaultextension=".csv", filetypes=(('Comma separated file', '*.csv'), ("All Files", "*.*")))
         if file != "":
             self.csvFileInput.delete(0, tk.END)
             self.csvFileInput.insert(0, file)
@@ -145,7 +145,9 @@ project_types = [
 ]
 
 def first_time_setup():
-
+    """
+    Lager directory og eller filer i appdata
+    """
     os.makedirs(appdata_dir, exist_ok=True)
 
     files = os.listdir(appdata_dir)

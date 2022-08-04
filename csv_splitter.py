@@ -296,6 +296,9 @@ def get_week_number(date):
     return datetime.date(*[int(i) for i in date.split("-")]).isocalendar()[1]
 
 def create_csv_dict(csvFile):
+    """
+    Lager et dict fra en csv fil med kollonetitler som keys
+    """
     csvDict = {}
     
     for colIndex, key in enumerate(csvFile[0]) :
