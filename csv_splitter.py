@@ -393,7 +393,7 @@ def get_billed_weekly(csvFile):
         companyIndex = get_object_index_by_name(csvDict['Kundenavn'][row], companies_billed)
         weekNr = get_week_number(csvDict['Fakturadato'][row])
 
-        companies_billed[companyIndex][str(weekNr)] += get_nr(csvDict['Beløp inkl. mva'][row])
+        companies_billed[companyIndex][str(weekNr)] += get_nr(csvDict['Betalt'][row])
 
     for i, company in enumerate(companies_billed):
         companies_billed[i]['sum'] = sum_all_keys(company)

@@ -49,7 +49,6 @@ class Hub_UI:
 
         # Config Btn
         
-
         ttk.Label(mainFrame,
             text="Timeoversikt.csv"
         ).grid(row= 1, column=0)
