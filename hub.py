@@ -144,7 +144,7 @@ project_types = [
 
 def first_time_setup():
     """
-    Lager directory og eller filer i appdata
+    Lager directory og/eller filer i appdata
     """
     os.makedirs(appdata_dir, exist_ok=True)
 

@@ -436,7 +436,7 @@ def get_billed_weekly(csvFile):
     for i, company in enumerate(companies_billed):
         companies_billed[i]['sum'] = sum_all_keys(company)
 
-    sum = {'name': 'Uke sum',
+    sum = {'name': 'Sum',
         'forfalt': 0,
         'ingen forfallsdato': 0
     }

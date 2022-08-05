@@ -1,6 +1,6 @@
 :: Install guide:
 :: 1. Edit directories for own computer
-:: 2. Run this file (Python 3.9 with Pyinstaller and inno compiler must be installed!)
+:: 2. Run this file (Inno compiler and Python 3.9 with Pyinstaller must be installed!)
 :: 3. Installer file is in ./Output
 
 set ISCCInstall="C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
