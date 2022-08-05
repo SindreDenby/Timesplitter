@@ -474,11 +474,12 @@ def read_csv_file(fileName):
     return data
 
 def reformat_csv_file(saveDir, fileName, exportType):
-    if user_cancel_overwrite(saveDir): return
-
+    
     csvFile = read_csv_file(fileName)
 
     if check_document_invalid(csvFile, exportType['corner'], exportType['input']): return
+
+    if user_cancel_overwrite(saveDir): return
 
     if exportType['input'] == "Timeoversikt": get_projects(csvFile)
 
@@ -552,7 +553,7 @@ other_exports ={
     'faktura_ukentlig':{
         'name': 'Faktura ukentlig',
         'input': 'Fakturaoversikt',
-        'description': 'Henter faktura fra kunder på ukentlig basis.',
+        'description': 'Sorterer faktura ukentlig basert på forfallsdato.',
         'function': get_billed_weekly,
         'corner': 'Fakturanr.'
     }
