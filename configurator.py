@@ -1,7 +1,6 @@
 import json
 import tkinter as tk
 import os
-import adigo_icon
 
 project_types = ['projects.json', 'admin.json', 'løpende.json', 'intern.json', 'fastpris.json', 'salg.json', 'bedriftsutvikling.json']
 appdata_dir = (os.getenv('APPDATA')).replace("\\", "/") + "/Timesplitter/config/"
@@ -40,8 +39,6 @@ class config_ui:
         root = tk.Tk()
         
         root.title("Adigo Financial Analysis System Configuration Tool")
-        
-        adigo_icon.set_base64_icon(adigo_icon.icon, root)
 
         curCol = 0
 
